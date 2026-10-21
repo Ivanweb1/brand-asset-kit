@@ -20,7 +20,7 @@ OUT_DIRS = ["01_LOGO", "02_GRAPHIC_ELEMENTS", "03_ICONS", "04_LABELS", "05_TYPOG
 def make_zip():
     import zipfile
     z = KIT.parent / "BRAND_ASSET_KIT.zip"
-    skip = ("_cache", "__pycache__", "_test", ".git")
+    skip = ("_cache", "__pycache__", "_test", ".git", "renders", ".hyperframes", "node_modules")
     with zipfile.ZipFile(z, "w", zipfile.ZIP_DEFLATED) as zf:
         for p in sorted(KIT.rglob("*")):
             if p.is_file() and not any(s in p.parts for s in skip) and p.name != "qa-report.json":
