@@ -71,8 +71,20 @@ def face(w):
     return _faces[w]
 
 
+_F = T["font"]
+
+
+def wt(weight, size):
+    """«Жирный» 800 в генераторах — это роль, а не начертание: крупный кегль идёт Medium (как на постерах),
+    средний — SemiBold. Поменяйте display/heading_weight в tokens.json, чтобы сменить характер всего комплекта."""
+    if weight == 800:
+        return _F["display_weight"] if size >= _F["display_min_size"] else _F["heading_weight"]
+    return weight
+
+
 def measure(s, size, weight=400, ls=0.0):
     """Ширина строки в px; ls — трекинг в em (как CSS letter-spacing)."""
+    weight = wt(weight, size)
     if not s:
         return 0.0
     f = face(weight)
@@ -90,6 +102,7 @@ def _norm_spans(spans, fill):
 def text(x, y, spans, size, weight=400, fill=None, anchor="start", ls=0.0, outline=False, opacity=None, tid=None):
     """Одна строка. spans — строка или [(текст, цвет)]. outline=True — текст в кривых."""
     fill = fill or C["graphite"]
+    weight = wt(weight, size)
     spans = _norm_spans(spans, fill)
     full = "".join(t for t, _ in spans)
     w = measure(full, size, weight, ls)

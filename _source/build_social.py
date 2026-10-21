@@ -115,7 +115,7 @@ def _(f):
     out += heavy_frame(gx, gy, s, C["graphite_line"]) + rect(gx - 220, gy, 160, 160, 38, B)
     out += header(f)
     h, _ = heading(f, f.top + f.off + 170, ["Сначала", "процесс.", [("Потом", "blue")], [("технология", "blue")]], 150, 0.95)
-    out += h + text(MX, f.bot - 38, "АВТОМАТИЗАЦИЯ", 24, 600, f.mut, ls=0.24) + text(MX, f.bot, "БИЗНЕС-ПРОЦЕССОВ", 24, 600, f.mut, ls=0.24)
+    out += h + text(MX, f.bot - 36, "АВТОМАТИЗАЦИЯ", 30, 600, f.fg) + text(MX, f.bot, "БИЗНЕС-ПРОЦЕССОВ", 30, 600, f.fg)
     return out
 
 

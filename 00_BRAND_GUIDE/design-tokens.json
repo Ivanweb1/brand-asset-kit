@@ -27,16 +27,51 @@
   },
   "font": {
     "family": "Manrope",
-    "weights": { "regular": 400, "medium": 500, "semibold": 600, "bold": 700, "extrabold": 800 },
-    "tracking_caps": 0.28,
-    "tracking_display": -0.035
+    "weights": {
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700,
+      "extrabold": 800
+    },
+    "tracking_caps": 0.12,
+    "tracking_display": -0.025,
+    "_comment": "Как на утверждённых постерах: крупные заголовки Medium, плотный интерлиньяж; дескриптор SemiBold капсом без разрядки.",
+    "display_weight": 500,
+    "heading_weight": 600,
+    "display_min_size": 72,
+    "descriptor": {
+      "weight": 600,
+      "tracking": 0,
+      "line_height": 1.21
+    }
   },
-  "radius": { "xs": 8, "sm": 14, "md": 22, "lg": 32, "xl": 44 },
-  "stroke": { "icon": 3, "line": 4, "ui": 3, "heavy_ratio": 0.2111 },
-  "space": { "unit": 8, "plate_pad_x": 44, "plate_pad_y": 36 },
+  "radius": {
+    "xs": 8,
+    "sm": 14,
+    "md": 22,
+    "lg": 32,
+    "xl": 44
+  },
+  "stroke": {
+    "icon": 3,
+    "line": 4,
+    "ui": 3,
+    "heavy_ratio": 0.2111
+  },
+  "space": {
+    "unit": 8,
+    "plate_pad_x": 44,
+    "plate_pad_y": 36
+  },
   "video": {
     "width": 1080,
     "height": 1920,
-    "safe": { "left": 72, "right": 160, "top": 260, "bottom": 420 }
+    "safe": {
+      "left": 72,
+      "right": 160,
+      "top": 260,
+      "bottom": 420
+    }
   }
 }

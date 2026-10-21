@@ -121,10 +121,10 @@ def _():
 def _():
     tone = Tone("dark")
     from build_logo import DESC
-    tw = measure(DESC[1], 20, 600, 0.22)
+    tw = measure(DESC[1], 22, 600)
     w, h = 24 + 72 + 22 + tw + 26, 120
     out = rect(SL, ST, w, h, 26, tone.bg) + logo(SL + 24, ST + 24, 72, W, B)
-    out += text(SL + 118, ST + 52, DESC[0], 20, 600, W, ls=0.22) + text(SL + 118, ST + 52 + 32, DESC[1], 20, 600, W, ls=0.22)
+    out += text(SL + 118, ST + 50, DESC[0], 22, 600, W) + text(SL + 118, ST + 50 + 28, DESC[1], 22, 600, W)
     return out
 
 
@@ -154,7 +154,7 @@ def _():
     out += text(SL, 1010 + 52, "что можно автоматизировать", 38, 500, C["graphite_muted"])
     g, _, _ = place(lab("cta", "blue"), SL, 1180)
     out += g
-    out += text(SL, Y1 - 10, "АВТОМАТИЗАЦИЯ БИЗНЕС-ПРОЦЕССОВ", 22, 600, C["graphite_muted"], ls=0.24)
+    out += text(SL, Y1 - 10, "АВТОМАТИЗАЦИЯ БИЗНЕС-ПРОЦЕССОВ", 26, 600, C["graphite_muted"])
     return out
 
 

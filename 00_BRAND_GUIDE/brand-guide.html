@@ -17,8 +17,8 @@ html,body{margin:0;background:#2C3035;font-family:var(--font);color:var(--graphi
 .k{font-size:14px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--offwhite-muted);display:flex;align-items:center;gap:12px;margin-bottom:28px}
 .k:before{content:"";width:12px;height:12px;border-radius:3px;background:var(--blue)}
 .dark .k{color:var(--graphite-muted)}
-h1{font-size:96px;line-height:.98;font-weight:800;letter-spacing:-.035em;margin:0}
-h2{font-size:56px;line-height:1.02;font-weight:800;letter-spacing:-.03em;margin:0 0 28px}
+h1{font-size:96px;line-height:.89;font-weight:500;letter-spacing:-.02em;margin:0}
+h2{font-size:56px;line-height:1;font-weight:500;letter-spacing:-.02em;margin:0 0 28px}
 h3{font-size:20px;font-weight:800;margin:0 0 10px}
 p,li{font-size:17px;line-height:1.55;font-weight:500;margin:0 0 10px}
 .mut{color:var(--offwhite-muted)}.dark .mut{color:var(--graphite-muted)}
@@ -54,9 +54,9 @@ img.full{width:100%;border-radius:18px;display:block}
 <!-- 1. Обложка -->
 <section class="page dark">
   <img src="../01_LOGO/PNG/logo-mark-inverse-512.png" style="width:120px" alt="">
-  <div style="position:absolute;left:88px;bottom:150px">
+  <div style="position:absolute;left:88px;top:170px">
     <div class="k">Brand Guide · v1.0</div>
-    <h1>Сначала процесс<br><span class="b">Потом технология</span></h1>
+    <h1>Сначала<br>процесс<br><span class="b" style="display:block;margin-top:.47em">Потом<br>технология</span></h1>
   </div>
   <div style="position:absolute;right:-160px;top:90px;width:640px;height:640px;opacity:.06;background:url(../01_LOGO/PNG/logo-mark-mono-white-1024.png) center/contain no-repeat"></div>
   <div class="num">АВТОМАТИЗАЦИЯ БИЗНЕС-ПРОЦЕССОВ</div>
@@ -181,12 +181,13 @@ img.full{width:100%;border-radius:18px;display:block}
     <div class="col" style="flex:.8">
       <h2>Manrope</h2>
       <p style="font-size:24px;font-weight:400">Regular 400</p><p style="font-size:24px;font-weight:500">Medium 500</p><p style="font-size:24px;font-weight:600">Semibold 600</p><p style="font-size:24px;font-weight:700">Bold 700</p><p style="font-size:24px;font-weight:800">ExtraBold 800</p>
-      <p class="mut" style="margin-top:16px">Заголовки — ExtraBold, трекинг −3%. Дескрипторы — капс Medium/Bold с трекингом +16…28%. Тексты — Medium. Курсив и подчёркивания не используем; выделяем цветом.</p>
+      <p class="mut" style="margin-top:16px">Как на утверждённых постерах: крупные заголовки — <b>Medium 500</b>, трекинг −2%, интерлиньяж 0.89, между смысловыми группами отступ ≈ 0.47 кегля. Заголовки до 72 px — SemiBold. Дескриптор — <b>SemiBold капсом без разрядки</b>. Курсив и подчёркивания не используем; выделяем цветом, плашкой или зачёркиванием.</p>
     </div>
     <div class="col scale">
-      <div><small>Display · 120–160 / 800</small><span style="font-size:64px;font-weight:800;letter-spacing:-.035em">Процесс</span></div>
-      <div><small>H1 · 88–112 / 800</small><span style="font-size:44px;font-weight:800;letter-spacing:-.03em">Заголовок поста</span></div>
-      <div><small>H2 · 48–64 / 800</small><span style="font-size:30px;font-weight:800">Подзаголовок</span></div>
+      <div><small>Display · 13% ширины / 500</small><span style="font-size:64px;font-weight:500;letter-spacing:-.02em">Процесс</span></div>
+      <div><small>H1 · 88–112 / 500</small><span style="font-size:44px;font-weight:500;letter-spacing:-.02em">Заголовок поста</span></div>
+      <div><small>H2 · 40–64 / 600</small><span style="font-size:30px;font-weight:600">Подзаголовок</span></div>
+      <div><small>Дескриптор · 3.8% ширины / 600</small><span style="font-size:16px;font-weight:600">АВТОМАТИЗАЦИЯ<br>БИЗНЕС-ПРОЦЕССОВ</span></div>
       <div><small>Текст · 36–40 / 500</small><span style="font-size:20px;font-weight:500">Основной текст поста</span></div>
       <div><small>Надзаголовок · 24–26 / 700, +16%</small><span style="font-size:14px;font-weight:700;letter-spacing:.16em">НАДЗАГОЛОВОК</span></div>
       <p class="mut" style="margin-top:14px">Размеры — в пикселях кадра 1080. Минимум для видео: 30 px. Минимум для поста: 26 px.</p>
@@ -218,7 +219,7 @@ img.full{width:100%;border-radius:18px;display:block}
 <!-- 9b. Фирменные приёмы -->
 <section class="page">
   <div class="k">05 · Фирменные приёмы</div>
-  <h2>Три приёма, по которым узнают бренд</h2>
+  <h2>Четыре приёма, по которым узнают бренд</h2>
   <div class="row">
     <div class="col"><img class="full" src="../04_LABELS/PNG/2x/label-highlight-dark@2x.png" style="background:var(--offwhite-surface);padding:28px 18px;height:150px;object-fit:contain" alt="">
       <h3 style="margin-top:18px">1. Слово на синей плашке</h3><p class="mut">Одно ключевое слово или фраза в заголовке — на синей плашке. Только одно выделение на макет.</p></div>
@@ -227,8 +228,26 @@ img.full{width:100%;border-radius:18px;display:block}
     <div class="col"><img class="full" src="../07_BACKGROUNDS/PNG/bg-giant-modules-dark-1920x1080.png" style="height:150px;object-fit:cover" alt="">
       <h3 style="margin-top:18px">3. Гигантский модуль</h3><p class="mut">Модули знака в масштабе кадра уходят за край. Тон фона +1 ступень, синим — один малый модуль.</p></div>
   </div>
-  <div class="row" style="margin-top:20px"><div class="col card"><h3>Ленточные титры</h3><p class="mut">Для видео: каждая строка заголовка на своей плашке, ключевая строка — синяя (label-headline-bars, overlay-reels-title-accent).</p></div></div>
+  <div class="row" style="margin-top:20px"><div class="col card"><h3>4. Зачёркивание</h3><p class="mut">«Ручной режим» перечёркнут синей полосой — дерзкий жест бренда. Только для старого, ручного, неправильного (label-strike, poster-manual-off).</p></div><div class="col card"><h3>Ленточные титры</h3><p class="mut">Для видео: каждая строка заголовка на своей плашке, ключевая строка — синяя (label-headline-bars, overlay-reels-title-accent).</p></div></div>
   <div class="num">09b</div>
+</section>
+
+<!-- 9c. Постеры -->
+<section class="page dark">
+  <div class="k">05 · Постеры-манифесты</div>
+  <h2>Серия постеров</h2>
+  <div class="shots">
+    <img src="../08_SOCIAL_TEMPLATES/PNG/posters/poster-logo-a-poster.png" style="width:128px" alt="">
+    <img src="../08_SOCIAL_TEMPLATES/PNG/posters/poster-slogan-a-poster.png" style="width:128px" alt="">
+    <img src="../08_SOCIAL_TEMPLATES/PNG/posters/poster-manual-off-a-poster.png" style="width:128px" alt="">
+    <img src="../08_SOCIAL_TEMPLATES/PNG/posters/poster-into-system-a-poster.png" style="width:128px" alt="">
+    <img src="../08_SOCIAL_TEMPLATES/PNG/posters/poster-giant-module-a-poster.png" style="width:128px" alt="">
+    <img src="../08_SOCIAL_TEMPLATES/PNG/posters/poster-ten-to-one-a-poster.png" style="width:128px" alt="">
+    <img src="../08_SOCIAL_TEMPLATES/PNG/posters/poster-no-chaos-a-poster.png" style="width:128px" alt="">
+    <img src="../08_SOCIAL_TEMPLATES/PNG/posters/poster-toggle-a-poster.png" style="width:128px" alt="">
+  </div>
+  <p class="mut" style="margin-top:28px;max-width:820px">Сетка утверждённых постеров: поля 15% ширины, знак — 70% ширины, заголовок — 13% ширины, дескриптор — 3.8% ширины внизу (≈ 85% высоты). Один постер — одна мысль. Форматы: A (990×1400), пост 1080×1350, сторис 1080×1920.</p>
+  <div class="num">09c</div>
 </section>
 
 <!-- 10. Иконки и плашки -->

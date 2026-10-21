@@ -29,6 +29,7 @@ def sheets():
         ("sheet-07-backgrounds.png", [p for p in _g("07_BACKGROUNDS/SVG/*.svg")], dict(cell=(300, 400), bg="#8A8D91")),
         ("sheet-08-posts.png", _g("08_SOCIAL_TEMPLATES/SVG/*-post-1080x1350.svg"), dict(cell=(460, 620), bg="#8A8D91")),
         ("sheet-08-stories.png", _g("08_SOCIAL_TEMPLATES/SVG/*-story-1080x1920.svg"), dict(cell=(380, 700), bg="#8A8D91")),
+        ("sheet-08-posters.png", _g("08_SOCIAL_TEMPLATES/SVG/posters/*-a-poster.svg"), dict(cell=(440, 640), bg="#8A8D91")),
         ("sheet-08-carousels.png", _g("08_SOCIAL_TEMPLATES/SVG/carousel-*/*-1080x1350.svg"), dict(cell=(330, 450), bg="#8A8D91")),
         ("sheet-09-extras-on-dark.png", [p for p in _g("09_EXTRA_ELEMENTS/SVG/x-*.svg") if "on-light" not in p.name and "animated" not in p.name], dict(cell=(320, 240), bg=G)),
         ("sheet-09-extras-on-light.png", _g("09_EXTRA_ELEMENTS/SVG/x-*-on-light.svg"), dict(cell=(320, 240), bg=W)),

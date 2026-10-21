@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import kit
 from kit import KIT, SRC
-import build_logo, build_elements, build_icons, build_labels, build_type, build_overlays, build_bg, build_social, build_extras
+import build_logo, build_elements, build_icons, build_labels, build_type, build_overlays, build_bg, build_social, build_posters, build_extras
 import qa
 import catalog
 
@@ -20,7 +20,7 @@ OUT_DIRS = ["01_LOGO", "02_GRAPHIC_ELEMENTS", "03_ICONS", "04_LABELS", "05_TYPOG
 def make_zip():
     import zipfile
     z = KIT.parent / "BRAND_ASSET_KIT.zip"
-    skip = ("_cache", "__pycache__", "_test")
+    skip = ("_cache", "__pycache__", "_test", ".git")
     with zipfile.ZipFile(z, "w", zipfile.ZIP_DEFLATED) as zf:
         for p in sorted(KIT.rglob("*")):
             if p.is_file() and not any(s in p.parts for s in skip) and p.name != "qa-report.json":
@@ -41,6 +41,7 @@ def main():
         "overlays": build_overlays.build(),
         "backgrounds": build_bg.build(),
         "social": build_social.build(),
+        "posters": build_posters.build(),
         "extras": build_extras.build(),
     }
     catalog.sheets()

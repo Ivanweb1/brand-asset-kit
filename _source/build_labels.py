@@ -339,6 +339,23 @@ def _(tone, empty):
     return w, h, body
 
 
+@label("strike", "Зачёркнутый «ручной режим»", ("dark", "light"))
+def _(tone, empty):
+    size = 64
+    old, new = "Ручной режим", "Система"
+    wa = measure(old, size, 800, -0.02)
+    w = PX + max(wa, measure(new, size, 800, -0.02)) + PX
+    y1 = PY + cap(size)
+    y2 = y1 + size * 0.95 + cap(size) * 0.0 + size * 0.2
+    h = y2 + PY + 10
+    bar = size * 0.12
+    body = rect(0, 0, w, h, R["lg"], tone.bg)
+    if not empty:
+        body += text(PX, y1, old, size, 800, tone.mut, ls=-0.02) + text(PX, y2, new, size, 800, tone.fg, ls=-0.02)
+    body += rect(PX - 4, y1 - cap(size) * 0.48 - bar / 2, wa + 8, bar, bar * 0.3, C["blue"])
+    return w, h, body
+
+
 def build():
     for name, (desc, fn, tones) in L.items():
         for tn in tones:

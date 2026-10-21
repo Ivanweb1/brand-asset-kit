@@ -15,27 +15,28 @@ def mark(name, main, accent, title, sizes=FULL, opacity=None):
 
 
 def descriptor(x, y, size, fill):
-    return (text(x, y, DESC[0], size, 500, fill, ls=0.28, outline=True)
-            + text(x, y + size * 1.55, DESC[1], size, 500, fill, ls=0.28, outline=True))
+    return (text(x, y, DESC[0], size, 600, fill, outline=True)
+            + text(x, y + size * 1.21, DESC[1], size, 600, fill, outline=True))
 
 
 def lockup_h(fill, main, accent):
     # знак 390; дескриптор центрирован по высоте знака
-    s = 46
-    block = s * 0.72 + s * 1.55
+    s = 50
+    block = s * 0.72 + s * 1.21
     y0 = (390 - block) / 2 + s * 0.72
     from kit import measure
-    w = 390 + 96 + measure(DESC[1], s, 500, 0.28) - 0.28 * s
-    return w, logo(0, 0, 390, main, accent) + descriptor(390 + 96, y0, s, fill)
+    w = 390 + 80 + measure(DESC[1], s, 600)
+    return w, logo(0, 0, 390, main, accent) + descriptor(390 + 80, y0, s, fill)
 
 
 def lockup_v(fill, main, accent):
-    s = 30
+    # пропорции постера: дескриптор ≈ 0.6 ширины знака, отступ ≈ 0.2 знака
+    s = 26
     from kit import measure
-    tw = measure(DESC[1], s, 500, 0.28) - 0.28 * s
+    tw = measure(DESC[1], s, 600)
     w = max(390, tw)
-    h = 390 + 70 + s * 0.72 + s * 1.55 + s * 0.24
-    return w, h, logo(0, 0, 390, main, accent) + descriptor(0, 390 + 70 + s * 0.72, s, fill)
+    h = 390 + 80 + s * 0.72 + s * 1.21 + s * 0.26
+    return w, h, logo(0, 0, 390, main, accent) + descriptor(0, 390 + 80 + s * 0.72, s, fill)
 
 
 def plate(shape, bg, main, accent):
