@@ -4,3 +4,6 @@ _source/_before/
 _source/qa-report.json
 _test/
 10_PREVIEWS/compare-*.png
+_source/motion/renders/
+_source/motion/.hyperframes/
+_source/motion/node_modules/

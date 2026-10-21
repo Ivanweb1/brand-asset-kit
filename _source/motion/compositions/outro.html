@@ -1,0 +1,84 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Manrope";
+      src: url("assets/fonts/Manrope-Variable.ttf") format("truetype");
+      font-weight: 200 800;
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+    }
+    /* Сетка постера в сторис: поле 164 px (15%), знак 280 px, заголовок 140 px Bold, интерлиньяж 0.89, между группами 0.47 кегля */
+    #out-mark {
+      position: absolute;
+      left: 164px;
+      top: 190px;
+      width: 280px;
+      height: 280px;
+      overflow: visible;
+    }
+    #out-type {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 1920px;
+      overflow: visible;
+    }
+    .out-h {
+      font-family: "Manrope";
+      font-size: 140px;
+      font-weight: 700;
+      letter-spacing: -2.8px;
+    }
+    .out-desc {
+      font-family: "Manrope";
+      font-size: 42px;
+      font-weight: 500;
+      fill: #f5f4f0;
+    }
+  </style>
+  <div id="root" data-composition-id="outro" data-width="1080" data-height="1920">
+    <svg id="out-mark" viewBox="0 0 390 390" xmlns="http://www.w3.org/2000/svg">
+      <g fill="#F5F4F0" fill-rule="evenodd">
+        <path id="out-f1" d="M42 0H138A42 42 0 0 1 180 42V138A42 42 0 0 1 138 180H42A42 42 0 0 1 0 138V42A42 42 0 0 1 42 0ZM54 38A16 16 0 0 0 38 54V126A16 16 0 0 0 54 142H126A16 16 0 0 0 142 126V54A16 16 0 0 0 126 38Z" />
+        <path id="out-f2" d="M252 0H348A42 42 0 0 1 390 42V138A42 42 0 0 1 348 180H252A42 42 0 0 1 210 138V42A42 42 0 0 1 252 0ZM264 38A16 16 0 0 0 248 54V126A16 16 0 0 0 264 142H336A16 16 0 0 0 352 126V54A16 16 0 0 0 336 38Z" />
+        <path id="out-f3" d="M42 210H138A42 42 0 0 1 180 252V348A42 42 0 0 1 138 390H42A42 42 0 0 1 0 348V252A42 42 0 0 1 42 210ZM54 248A16 16 0 0 0 38 264V336A16 16 0 0 0 54 352H126A16 16 0 0 0 142 336V264A16 16 0 0 0 126 248Z" />
+      </g>
+      <g fill="#F5F4F0">
+        <rect id="out-dot1" x="340" y="210" width="50" height="50" rx="12" />
+        <rect id="out-dot2" x="275" y="275" width="50" height="50" rx="12" />
+        <rect id="out-dot3" x="210" y="340" width="50" height="50" rx="12" />
+        <rect id="out-dot4" x="340" y="340" width="50" height="50" rx="12" />
+      </g>
+      <rect id="out-blue" x="210" y="210" width="50" height="50" rx="12" fill="#1769FF" />
+    </svg>
+    <svg id="out-type" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+      <text id="out-l1" class="out-h" x="164" y="681" fill="#F5F4F0">Сначала</text>
+      <text id="out-l2" class="out-h" x="164" y="806" fill="#F5F4F0">процесс</text>
+      <text id="out-l3" class="out-h" x="164" y="997" fill="#1769FF">Потом</text>
+      <text id="out-l4" class="out-h" x="164" y="1122" fill="#1769FF">технология</text>
+      <text id="out-desc1" class="out-desc" x="164" y="1262">АВТОМАТИЗИРУЮ</text>
+      <text id="out-desc2" class="out-desc" x="164" y="1313">БИЗНЕС-ПРОЦЕССЫ</text>
+    </svg>
+  </div>
+  <script>
+    const frames = ["#out-f1", "#out-f2", "#out-f3"];
+    const dots = ["#out-dot1", "#out-dot2", "#out-dot3", "#out-dot4"];
+    const tl = gsap.timeline({ paused: true });
+    tl.set(["#out-blue", ...frames, ...dots], { transformOrigin: "50% 50%" }, 0);
+
+    // 1. Первым загорается синий модуль — с лёгкой пружиной
+    tl.fromTo("#out-blue", { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.36, ease: "back.out(1.4)" }, 0.12);
+    // 2. Вокруг него собирается знак
+    tl.fromTo(frames, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.42, ease: "expo.out", stagger: 0.05 }, 0.3);
+    tl.fromTo(dots, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.36, ease: "expo.out", stagger: 0.04 }, 0.4);
+    // 3. Слоган строка за строкой: размытие 8 → 0 за 0.18 с
+    tl.fromTo(["#out-l1", "#out-l2", "#out-l3", "#out-l4"], { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.18, ease: "power4.out", stagger: 0.09 }, 0.62);
+    // 4. Дескриптор — тихо, последним
+    tl.fromTo(["#out-desc1", "#out-desc2"], { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out", stagger: 0.06 }, 0.95);
+
+    window.__timelines["outro"] = tl;
+  </script>
+</template>
