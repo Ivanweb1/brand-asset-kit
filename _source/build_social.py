@@ -56,8 +56,7 @@ def para(f, y, s, size=38, weight=500, fill=None, lh=1.42, maxw=None):
 def header(f, kick=None, counter=None, fg=None, mut=None, accent=B):
     fg, mut = fg or f.fg, mut or f.mut
     out = logo(MX, f.top, 64, fg, accent)
-    if kick:
-        out += rect(MX + 64 + 28, f.top + 23, 18, 18, 5, accent) + text(MX + 64 + 58, f.top + 32 + cap(24) / 2, kick, 24, 700, mut, ls=0.16)
+    # kick оставлен в сигнатуре для совместимости: подписи справа от знака не ставим (решение по постерам)
     if counter:
         out += text(f.w - MX, f.top + 32 + cap(26) / 2, counter, 26, 700, mut, anchor="end")
     return out
@@ -65,10 +64,12 @@ def header(f, kick=None, counter=None, fg=None, mut=None, accent=B):
 
 def arrow_btn(x, y, s, fg, filled=None, arr=None):
     arr = arr or fg
-    base = rect(x, y, s, s, s * 0.26, filled) if filled else rect(x + 1.5, y + 1.5, s - 3, s - 3, s * 0.26, "none", fg, 3)
+    base = rect(x, y, s, s, s * 0.26, filled) if filled else rect(x + 1.25, y + 1.25, s - 2.5, s - 2.5, s * 0.26, "none", fg, 2.5)
+    # стрелка — треть квадрата, тонкая: крупная и жирная выглядит грязно
     k = s / 84
-    return (base + line(x + 24 * k, y + s / 2, x + 58 * k, y + s / 2, arr, 5 * k)
-            + f'<path d="M{x + 46 * k:g} {y + 30 * k:g}L{x + 59 * k:g} {y + s / 2:g}L{x + 46 * k:g} {y + 54 * k:g}" fill="none" stroke="{arr}" stroke-width="{5 * k:g}" stroke-linecap="round" stroke-linejoin="round"/>')
+    cx, cy, a, c = x + s / 2, y + s / 2, 13 * k, 7 * k
+    return (base + line(cx - a, cy, cx + a, cy, arr, 3 * k)
+            + f'<path d="M{cx + a - c:g} {cy - c:g}L{cx + a:g} {cy:g}L{cx + a - c:g} {cy + c:g}" fill="none" stroke="{arr}" stroke-width="{3 * k:g}" stroke-linecap="round" stroke-linejoin="round"/>')
 
 
 def footer(f, arrow=True, hint=None, fg=None, mut=None):
@@ -93,6 +94,11 @@ def toggle(x, y, w, on, track_on=B, knob_on=W, off_col=None):
     return rect(x + sw / 2, y + sw / 2, w - sw, h - sw, r, "none", off_col, sw) + rect(x + p, y + p, k, k, k * 0.24, off_col)
 
 
+def num_tile(x, y, s, n, hot=False):
+    """Плитка с номером шага — вместо мелких иконок: чище на маленьком размере."""
+    return rect(x, y, s, s, s * 0.24, B if hot else G) + text(x + s / 2, y + s / 2 + cap(s * 0.4) / 2, f"{n:02d}", s * 0.4, 700, W, anchor="middle", ls=-0.02)
+
+
 def bg(f, kind):
     return BGS[kind](f.w, f.h)
 
@@ -114,8 +120,8 @@ def _(f):
     gx, gy = f.w - s * 0.62, f.h - s * 0.66
     out += heavy_frame(gx, gy, s, C["graphite_line"]) + rect(gx - 220, gy, 160, 160, 38, B)
     out += header(f)
-    h, _ = heading(f, f.top + f.off + 170, ["Сначала", "процесс.", [("Потом", "blue")], [("технология", "blue")]], 150, 0.95)
-    out += h + text(MX, f.bot - 36, "АВТОМАТИЗАЦИЯ", 30, 600, f.fg) + text(MX, f.bot, "БИЗНЕС-ПРОЦЕССОВ", 30, 600, f.fg)
+    h, _ = heading(f, f.top + f.off + 170, ["Сначала", "процесс", [("Потом", "blue")], [("технология", "blue")]], 150, 0.95)
+    out += h + text(MX, f.bot - 36, "АВТОМАТИЗАЦИЯ", 30, 500, f.fg) + text(MX, f.bot, "БИЗНЕС-ПРОЦЕССОВ", 30, 500, f.fg)
     return out
 
 
@@ -142,9 +148,9 @@ def _(f):
 def _(f):
     out = bg(f, "solid-offwhite") + heavy_frame(f.w - 330, -170, 520, C["offwhite_surface"]) + header(f, "ЭКСПЕРТИЗА")
     y = f.top + f.off + 170
-    h, yb = heading(f, y, ["Почему", "автоматизация", [("не работает", "chip")], "без описанного", "процесса"], 90, 1.08)
+    h, yb = heading(f, y, ["Почему", "автоматизация", [("работает", "chip")], "только с описанным", "процессом"], 90, 1.08)
     out += h
-    p, yb = para(f, yb + 70, "Если процесс живёт в головах сотрудников, бот или CRM только ускорят хаос.", 38)
+    p, yb = para(f, yb + 70, "Когда шаги, роли и сроки описаны, бот и CRM ускоряют работу всей команды", 38)
     out += p
     py = yb + 70
     ph = f.bot - 70 - py
@@ -161,8 +167,8 @@ def _(f):
 def _(f):
     out = bg(f, "solid-graphite") + heavy_frame(f.w - 300, f.h - 330, 560, C["graphite_surface"]) + header(f)
     y = f.top + f.off + 190
-    out += rect(MX, y, 70, 110, 20, B) + rect(MX + 92, y, 70, 110, 20, B)
-    h, yb = heading(f, y + 190, ["Технология", "не исправит", "процесс, который", [("не работает", "chip")]], 96, 1.1)
+    out += rect(MX, y, 80, 80, 19, B) + rect(MX + 100, y, 80, 80, 19, B)  # кавычки — два малых модуля знака
+    h, yb = heading(f, y + 190, ["Технология", "усиливает", "процесс, который", [("уже работает", "chip")]], 96, 1.1)
     out += h + rect(MX, yb + 96, 56, 4, 2, f.mut) + text(MX + 80, yb + 96 + 2 + cap(28) / 2, "ИМЯ ФАМИЛИЯ", 28, 700, f.mut, ls=0.16)
     return out + footer(f, False)
 
@@ -186,15 +192,14 @@ def _(f):
     y = f.top + f.off + 160
     h, yb = heading(f, y, ["Аудит", "процессов", [("за 7 дней", "chip")]], 110, 1.06)
     out += h
-    p, yb = para(f, yb + 70, "Находим, где команда теряет время, и даём план автоматизации с расчётом эффекта.", 36)
+    p, yb = para(f, yb + 70, "Находим, где команда теряет время, и даём план автоматизации с расчётом эффекта", 36)
     out += p
     yy = yb + 70
     ch = min(124, (f.bot - 90 - yy - 2 * 16) / 3)
     for i, (ic, t, d) in enumerate((("process", "Карта процессов", "Как работа идёт сейчас"), ("analytics", "Расчёт экономии", "Часы и деньги в месяц"), ("system", "План внедрения", "Что, в каком порядке, чем"))):
         ts = min(88, ch - 24)
-        out += rect(MX, yy, f.w - 2 * MX, ch, 28, f.surf) + icon_tile(MX + 18, yy + (ch - ts) / 2, ts, ic, Tone("dark"))
+        out += rect(MX, yy, f.w - 2 * MX, ch, 28, f.surf) + num_tile(MX + 18, yy + (ch - ts) / 2, ts, i + 1, i == 2)
         out += text(MX + ts + 44, yy + ch / 2 - 6, t, 38, 800, W) + text(MX + ts + 44, yy + ch / 2 + 36, d, 28, 500, f.mut)
-        out += text(f.w - MX - 32, yy + ch / 2 + cap(30) / 2, f"0{i + 1}", 30, 800, B, anchor="end")
         yy += ch + 16
     return out + footer(f)
 
@@ -214,7 +219,7 @@ def _(f):
         last = i == len(steps) - 1
         if not last:
             out += line(MX + ts / 2, yy + ts, MX + ts / 2, yy + gap, C["offwhite_line"], 6, "butt")
-        out += rect(MX, yy, ts, ts, 30, B if last else G) + f'<g transform="translate({MX + 28} {yy + 28}) scale({64 / 48:.4f})">{icon(ic, W, W if last else B)}</g>'
+        out += num_tile(MX, yy, ts, i + 1, last)
         out += text(MX + ts + 36, yy + 22 + cap(24), f"ШАГ 0{i + 1}", 24, 700, B if last else C["offwhite_muted"], ls=0.16)
         out += text(MX + ts + 36, yy + 22 + cap(24) + 22 + cap(42), t, 42, 800, G)
         out += text(MX + ts + 36, yy + 22 + cap(24) + 22 + cap(42) + 44, d, 28, 500, C["offwhite_muted"])
@@ -261,16 +266,16 @@ def _(f):
 
 # ---------------------------------------------------------------- карусели
 MISTAKES = [
-    ("Нет анализа процесса", "Автоматизируют то, что никто не описал. Система повторяет хаос — только быстрее.",
-     "Сначала опишите процесс: шаги, роли, сроки."),
-    ("Слишком сложные решения", "Под простую задачу строят громоздкую систему, которую некому поддерживать.",
-     "Начните с одного узкого места и простого решения."),
-    ("Нет интеграций", "Данные вручную переносят между сервисами — и ошибки возвращаются.",
-     "Свяжите сайт, CRM и мессенджеры, чтобы данные шли сами."),
-    ("Игнорирование команды", "Систему внедряют без тех, кто будет работать в ней каждый день.",
-     "Вовлекайте сотрудников с первого дня."),
-    ("Нет контроля результата", "Не измеряют время и деньги до и после — эффект нельзя доказать.",
-     "Зафиксируйте метрики до старта и сравните через месяц."),
+    ("Нет анализа процесса", "Автоматизируют то, что никто не описал. Система повторяет хаос — только быстрее",
+     "Сначала опишите процесс: шаги, роли, сроки"),
+    ("Слишком сложные решения", "Под простую задачу строят громоздкую систему, которую некому поддерживать",
+     "Начните с одного узкого места и простого решения"),
+    ("Нет интеграций", "Данные вручную переносят между сервисами — и ошибки возвращаются",
+     "Свяжите сайт, CRM и мессенджеры, чтобы данные шли сами"),
+    ("Игнорирование команды", "Систему внедряют без тех, кто будет работать в ней каждый день",
+     "Вовлекайте сотрудников с первого дня"),
+    ("Нет контроля результата", "Не измеряют время и деньги до и после — эффект нельзя доказать",
+     "Зафиксируйте метрики до старта и сравните через месяц"),
 ]
 
 

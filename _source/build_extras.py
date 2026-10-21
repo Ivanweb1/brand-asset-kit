@@ -17,20 +17,25 @@ def ex(name, desc):
 CURSOR = "M6 4L6 66L22 51L33 76L46 70L35 46L56 46Z"
 
 
+def cursor(col, dx=0, dy=0):
+    """Плоский курсор без обводки: одна форма, углы мягко скруглены той же заливкой."""
+    return f'<path d="{CURSOR}" fill="{col}" stroke="{col}" stroke-width="4" stroke-linejoin="round" transform="translate({dx} {dy})"/>'
+
+
 @ex("cursor-arrow", "Фирменный курсор")
 def _(t):
-    return 64, 84, path(CURSOR, t.bg, 5, t.fg)
+    return 64, 84, cursor(t.fg)
 
 
 @ex("cursor-arrow-blue", "Курсор-акцент")
 def _(t):
-    return 64, 84, path(CURSOR, W, 5, B)
+    return 64, 84, cursor(B)
 
 
 @ex("cursor-click", "Курсор с кликом")
 def _(t):
-    rays = "".join(line(30 + dx, 30 + dy, 30 + ex_, 30 + ey, B, 6) for dx, dy, ex_, ey in ((-6, -12, -6, -26), (-14, -4, -28, -4), (-12, -12, -22, -22)))
-    return 110, 120, rays + f'<g transform="translate(34 32)">{path(CURSOR, t.bg, 5, t.fg)}</g>'
+    # тонкий синий модуль-«волна» вокруг точки клика
+    return 112, 118, rect(4, 4, 56, 56, 14, "none", B, 4) + cursor(t.fg, 28, 28)
 
 
 @ex("cursor-module", "Модульный курсор-фокус")

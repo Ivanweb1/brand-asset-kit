@@ -227,21 +227,6 @@ def _(m, a):
     return 300 + LW, 300 + LW, _frame_line(P, P, 300, 300, 56, a, LW, "18 18")
 
 
-@el("composition-mosaic", "Декоративная мозаика из модулей")
-def _(m, a):
-    body = heavy_frame(0, 0, 180, m) + heavy_frame(210, 210, 180, m) + cluster(420, 0, m, a)
-    body += _frame_line(420 + P, 210 + P, 180 - LW, 180 - LW, 42, m) + rect(0, 210, 180, 180, 42, m)
-    body += dot(275, 65, 50, m)
-    return 600, 390, body
-
-
-@el("composition-scale", "Модули по нарастанию")
-def _(m, a):
-    body = dot(0, 130, 50, m) + rect(80, 90, 90, 90, 22, m) + heavy_frame(200, 40, 140, m) + heavy_frame(370, 0, 180, m)
-    body += dot(495, 125, 30, a)
-    return 550, 180, body
-
-
 def build():
     n = 0
     for name, (desc, fn) in E.items():

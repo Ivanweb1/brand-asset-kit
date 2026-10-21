@@ -15,8 +15,8 @@ def mark(name, main, accent, title, sizes=FULL, opacity=None):
 
 
 def descriptor(x, y, size, fill):
-    return (text(x, y, DESC[0], size, 600, fill, outline=True)
-            + text(x, y + size * 1.21, DESC[1], size, 600, fill, outline=True))
+    return (text(x, y, DESC[0], size, 500, fill, outline=True)
+            + text(x, y + size * 1.21, DESC[1], size, 500, fill, outline=True))
 
 
 def lockup_h(fill, main, accent):
@@ -33,7 +33,7 @@ def lockup_v(fill, main, accent):
     # пропорции постера: дескриптор ≈ 0.6 ширины знака, отступ ≈ 0.2 знака
     s = 26
     from kit import measure
-    tw = measure(DESC[1], s, 600)
+    tw = measure(DESC[1], s, 500)
     w = max(390, tw)
     h = 390 + 80 + s * 0.72 + s * 1.21 + s * 0.26
     return w, h, logo(0, 0, 390, main, accent) + descriptor(0, 390 + 80 + s * 0.72, s, fill)
@@ -59,10 +59,8 @@ def build():
     mark("logo-mark-mono-white", W, W, "Знак — одноцветный светлый")
     mark("logo-mark-mono-graphite", G, G, "Знак — одноцветный графитовый")
 
+    # горизонтальный локап (надпись справа от знака) не используем — только вертикальный, как на постере
     for tone, fill, main in (("light-bg", G, G), ("dark-bg", W, W)):
-        w, body = lockup_h(fill, main, B)
-        save(f"01_LOGO/SVG/logo-lockup-horizontal-{tone}.svg", round(w), 390, body, "Логотип с дескриптором, горизонтальный",
-             pngs=[(f"01_LOGO/PNG/logo-lockup-horizontal-{tone}-{s}.png", s) for s in (1024, 2048)])
         w, h, body = lockup_v(fill, main, B)
         save(f"01_LOGO/SVG/logo-lockup-vertical-{tone}.svg", round(w), round(h), body, "Логотип с дескриптором, вертикальный",
              pngs=[(f"01_LOGO/PNG/logo-lockup-vertical-{tone}-{s}.png", s) for s in (1024, 2048)])
@@ -83,6 +81,6 @@ def build():
     # водяные знаки: компактные, полупрозрачность уже «запечена»
     mark("watermark-mark-white-70", W, W, "Водяной знак, светлый 70%", sizes=[128, 256, 512], opacity=0.7)
     mark("watermark-mark-graphite-60", G, G, "Водяной знак, графитовый 60%", sizes=[128, 256, 512], opacity=0.6)
-    w, body = lockup_h(W, W, B)
-    save("01_LOGO/SVG/watermark-lockup-white-70.svg", round(w), 390, f'<g opacity="0.7">{body}</g>', "Водяной знак с дескриптором",
+    w, h, body = lockup_v(W, W, B)
+    save("01_LOGO/SVG/watermark-lockup-white-70.svg", round(w), round(h), f'<g opacity="0.7">{body}</g>', "Водяной знак с дескриптором",
          pngs=[("01_LOGO/PNG/watermark-lockup-white-70-512.png", 512), ("01_LOGO/PNG/watermark-lockup-white-70-1024.png", 1024)])

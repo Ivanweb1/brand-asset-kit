@@ -42,15 +42,15 @@ def r(*spans):
 COMPS = {
     "slogan-process-technology-stacked": poster_slogan,
     "slogan-process-technology-2lines": block([r("Сначала процесс"), r(("Потом технология", B))], 120, 800, 1.05, DISPLAY_LS),
-    "slogan-process-technology-1line": block([r("Сначала процесс. ", ("Потом технология", B))], 96, 800, 1, DISPLAY_LS),
+    "slogan-process-technology-1line": block([r("Сначала процесс ", ("Потом технология", B))], 96, 800, 1, DISPLAY_LS),
     "slogan-manual-off-stacked": block([r("Выключаем"), r(("ручной режим", B))], 140, 800, 1.02, DISPLAY_LS),
     "slogan-manual-off-1line": block([r("Выключаем ", ("ручной режим", B))], 96, 800, 1, DISPLAY_LS),
     "slogan-manual-to-system-stacked": block([r("Из ручных"), r("процессов —"), r(("в систему", B))], 140, 800, 1.02, DISPLAY_LS),
     "slogan-manual-to-system-1line": block([r("Из ручных процессов — ", ("в систему", B))], 96, 800, 1, DISPLAY_LS),
-    "descriptor-automation-2lines": block([r("АВТОМАТИЗАЦИЯ"), r("БИЗНЕС-ПРОЦЕССОВ")], 56, 600, 1.21, 0),
-    "descriptor-automation-1line": block([r("АВТОМАТИЗАЦИЯ БИЗНЕС-ПРОЦЕССОВ")], 56, 600, 1, 0),
-    "descriptor-automate-2lines": block([r("АВТОМАТИЗИРУЮ"), r("БИЗНЕС-ПРОЦЕССЫ")], 56, 600, 1.21, 0),
-    "descriptor-automate-1line": block([r("АВТОМАТИЗИРУЮ БИЗНЕС-ПРОЦЕССЫ")], 56, 600, 1, 0),
+    "descriptor-automation-2lines": block([r("АВТОМАТИЗАЦИЯ"), r("БИЗНЕС-ПРОЦЕССОВ")], 56, 500, 1.21, 0),
+    "descriptor-automation-1line": block([r("АВТОМАТИЗАЦИЯ БИЗНЕС-ПРОЦЕССОВ")], 56, 500, 1, 0),
+    "descriptor-automate-2lines": block([r("АВТОМАТИЗИРУЮ"), r("БИЗНЕС-ПРОЦЕССЫ")], 56, 500, 1.21, 0),
+    "descriptor-automate-1line": block([r("АВТОМАТИЗИРУЮ БИЗНЕС-ПРОЦЕССЫ")], 56, 500, 1, 0),
     "word-ai": block([r("AI")], 300, 800, 1, -0.02),
     "word-system": block([r("SYSTEM")], 220, 800, 1, -0.02),
     "word-process": block([r("PROCESS")], 220, 800, 1, -0.02),
@@ -79,8 +79,7 @@ def word_with_module(word, size=220):
     return draw
 
 
-for _w in ("AI", "SYSTEM", "PROCESS", "AUTOMATION", "DIGITAL"):
-    COMPS[f"word-{_w.lower()}-dot"] = word_with_module(_w, 300 if _w == "AI" else 220)
+# версии «слово + синяя точка» убраны: точек в бренде нет
 
 
 def build():

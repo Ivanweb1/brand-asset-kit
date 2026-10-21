@@ -90,7 +90,7 @@ def _(tone, empty):
 
 @label("key-thought", "Важная мысль")
 def _(tone, empty):
-    return text_plate(tone, empty, "ВАЖНО", ["Хаос нельзя автоматизировать.", "Сначала наводим порядок", "в процессе"], 44, 700, 1.22, bar=True)
+    return text_plate(tone, empty, "ВАЖНО", ["Сначала наводим порядок,", "потом автоматизируем", "процесс"], 44, 700, 1.22, bar=True)
 
 
 @label("key-number", "Ключевая цифра", ("dark", "light", "blue"))
@@ -245,7 +245,7 @@ def _(tone, empty):
     arr = C["blue"] if tone.name == "blue" else C["offwhite"]
     ax, ay = w - PX - 104, (hgt - 104) / 2
     body = rect(0, 0, w, hgt, R["lg"], tone.bg) + rect(ax, ay, 104, 104, 26, tile_bg)
-    body += line(ax + 30, ay + 52, ax + 72, ay + 52, arr, 7) + f'<path d="M{ax + 56} {ay + 36}L{ax + 73} {ay + 52}L{ax + 56} {ay + 68}" fill="none" stroke="{arr}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>'
+    body += line(ax + 36, ay + 52, ax + 68, ay + 52, arr, 4.5) + f'<path d="M{ax + 58} {ay + 42}L{ax + 68} {ay + 52}L{ax + 58} {ay + 62}" fill="none" stroke="{arr}" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>'
     if not empty:
         body += text(PX, hgt / 2 - 6, t[0], 44, 800, tone.fg)
         body += text(PX, hgt / 2 + 42, t[1], 32, 500, tone.fg if tone.name == "blue" else tone.mut, opacity=0.85 if tone.name == "blue" else None)
@@ -274,12 +274,12 @@ def _(tone, empty):
 
 @label("quote", "Короткая цитата")
 def _(tone, empty):
-    rows = ["Технология не исправит", "процесс, который", "не работает"]
+    rows = ["Технология усиливает", "процесс, который", "уже работает"]
     w = PX + tw(rows, 46, 700) + PX + 20
     y = PY + 70
     s, h = stack(PX, y + 20, rows, 46, 700, tone.fg, 1.2, empty)
     y2 = y + 20 + h + 34
-    q = rect(PX, PY, 30, 46, 8, C["blue"]) + rect(PX + 42, PY, 30, 46, 8, C["blue"])
+    q = rect(PX, PY, 40, 40, 9.6, C["blue"]) + rect(PX + 52, PY, 40, 40, 9.6, C["blue"])
     body = q + s
     if not empty:
         body += text(PX, y2 + cap(28), "— ИМЯ АВТОРА", 26, 700, tone.mut, ls=0.16)

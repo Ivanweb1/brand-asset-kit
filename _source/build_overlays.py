@@ -112,20 +112,16 @@ def _():
     out = rect(x, y, w, h, 32, tone.bg) + kicker(x + PX, y + PY + cap(26), "СТЕК", "СТЕК", tone, False)
     yy = y + PY + cap(26) + 34
     for ic, t in rows:
-        out += icon_tile(x + PX, yy, 96, ic, tone) + text(x + PX + 96 + 28, yy + 48 + cap(44) / 2, t, 44, 700, tone.fg)
+        from build_social import num_tile
+        n = [r[0] for r in rows].index(ic) + 1
+        out += num_tile(x + PX, yy, 96, n, n == len(rows)) + text(x + PX + 96 + 28, yy + 48 + cap(44) / 2, t, 44, 700, tone.fg)
         yy += 96 + 26
     return out
 
 
 @ov("logo-marker", "Маркер с логотипом в углу")
 def _():
-    tone = Tone("dark")
-    from build_logo import DESC
-    tw = measure(DESC[1], 22, 600)
-    w, h = 24 + 72 + 22 + tw + 26, 120
-    out = rect(SL, ST, w, h, 26, tone.bg) + logo(SL + 24, ST + 24, 72, W, B)
-    out += text(SL + 118, ST + 50, DESC[0], 22, 600, W) + text(SL + 118, ST + 50 + 28, DESC[1], 22, 600, W)
-    return out
+    return rect(SL, ST, 132, 132, 32, G) + logo(SL + 28, ST + 28, 76, W, B)
 
 
 @ov("frame-minimal", "Минималистичная рамка по безопасной зоне")
@@ -154,7 +150,7 @@ def _():
     out += text(SL, 1010 + 52, "что можно автоматизировать", 38, 500, C["graphite_muted"])
     g, _, _ = place(lab("cta", "blue"), SL, 1180)
     out += g
-    out += text(SL, Y1 - 10, "АВТОМАТИЗАЦИЯ БИЗНЕС-ПРОЦЕССОВ", 26, 600, C["graphite_muted"])
+    out += text(SL, Y1 - 10, "АВТОМАТИЗАЦИЯ БИЗНЕС-ПРОЦЕССОВ", 26, 500, C["graphite_muted"])
     return out
 
 

@@ -36,12 +36,12 @@
     },
     "tracking_caps": 0.12,
     "tracking_display": -0.025,
-    "_comment": "Как на утверждённых постерах: крупные заголовки Medium, плотный интерлиньяж; дескриптор SemiBold капсом без разрядки.",
-    "display_weight": 500,
-    "heading_weight": 600,
+    "_comment": "Сверено с утверждёнными постерами по плотности штриха: заголовки Bold 700, плотный интерлиньяж 0.89; дескриптор Medium 500 капсом без разрядки.",
+    "display_weight": 700,
+    "heading_weight": 700,
     "display_min_size": 72,
     "descriptor": {
-      "weight": 600,
+      "weight": 500,
       "tracking": 0,
       "line_height": 1.21
     }
