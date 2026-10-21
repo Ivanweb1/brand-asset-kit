@@ -1,0 +1,6 @@
+__pycache__/
+_source/_cache/
+_source/_before/
+_source/qa-report.json
+_test/
+10_PREVIEWS/compare-*.png

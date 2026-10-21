@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080"><title>Фон</title><defs><pattern id="pd-111315" width="36" height="36" patternUnits="userSpaceOnUse"><rect x="15.5" y="15.5" width="5" height="5" rx="1.2" fill="#2C3035"/></pattern></defs><rect x="0" y="0" width="1920" height="1080" rx="0" fill="#111315"/><rect width="1920" height="1080" fill="url(#pd-111315)"/></svg>

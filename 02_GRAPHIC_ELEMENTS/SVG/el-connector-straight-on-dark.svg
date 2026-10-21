@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="50" viewBox="0 0 600 50"><title>Связь двух модулей</title><rect x="0" y="0" width="50" height="50" rx="12" fill="#F5F4F0"/><line x1="50" y1="25" x2="550" y2="25" stroke="#F5F4F0" stroke-width="8" stroke-linecap="butt"/><rect x="550" y="0" width="50" height="50" rx="12" fill="#1769FF"/></svg>

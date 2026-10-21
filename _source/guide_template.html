@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Brand Guide</title>
+<link rel="stylesheet" href="design-tokens.css">
+<style>
+@font-face{font-family:Manrope;src:url(fonts/Manrope-Variable.ttf);font-weight:200 800}
+@page{size:1280px 800px;margin:0}
+*{box-sizing:border-box}
+html,body{margin:0;background:#2C3035;font-family:var(--font);color:var(--graphite)}
+.page{width:1280px;height:800px;margin:0 auto 24px;position:relative;overflow:hidden;background:var(--offwhite);padding:72px 88px;page-break-after:always;break-after:page}
+@media print{.page{margin:0}}
+.dark{background:var(--graphite);color:var(--offwhite)}
+.blue{background:var(--blue);color:var(--offwhite)}
+.k{font-size:14px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--offwhite-muted);display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.k:before{content:"";width:12px;height:12px;border-radius:3px;background:var(--blue)}
+.dark .k{color:var(--graphite-muted)}
+h1{font-size:96px;line-height:.98;font-weight:800;letter-spacing:-.035em;margin:0}
+h2{font-size:56px;line-height:1.02;font-weight:800;letter-spacing:-.03em;margin:0 0 28px}
+h3{font-size:20px;font-weight:800;margin:0 0 10px}
+p,li{font-size:17px;line-height:1.55;font-weight:500;margin:0 0 10px}
+.mut{color:var(--offwhite-muted)}.dark .mut{color:var(--graphite-muted)}
+.b{color:var(--blue)}
+.num{position:absolute;right:88px;bottom:56px;font-size:13px;font-weight:700;letter-spacing:.16em;color:var(--offwhite-muted)}
+.dark .num{color:var(--graphite-muted)}
+.row{display:flex;gap:28px}.col{flex:1}
+.card{background:var(--offwhite-surface);border-radius:22px;padding:24px}
+.dark .card{background:var(--graphite-surface)}
+ul{padding-left:20px;margin:0}
+.sw{border-radius:22px;height:200px;padding:20px;display:flex;flex-direction:column;justify-content:flex-end;font-weight:700}
+.sw small{display:block;font-weight:500;opacity:.75;margin-top:4px;font-size:13px}
+.ratio{display:flex;height:28px;border-radius:10px;overflow:hidden;margin-top:18px}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.tile{border-radius:20px;height:190px;display:flex;align-items:center;justify-content:center;position:relative}
+.tile img{max-width:58%;max-height:62%}
+.tile span{position:absolute;left:14px;bottom:10px;font-size:12px;font-weight:600;opacity:.7}
+.bad .tile:after{content:"×";position:absolute;right:14px;top:6px;font-size:34px;font-weight:800;color:var(--blue)}
+.cs{position:relative;width:330px;height:330px;margin:10px auto}
+.cs .zone{position:absolute;inset:0;border:2px dashed var(--blue);border-radius:8px}
+.cs img{position:absolute;inset:55px;width:220px}
+.cs i{position:absolute;font-style:normal;font-size:13px;font-weight:700;color:var(--blue)}
+.scale div{display:flex;align-items:baseline;gap:24px;border-bottom:1px solid var(--offwhite-line);padding:8px 0}
+.scale small{width:220px;flex:none;font-size:13px;color:var(--offwhite-muted);font-weight:600}
+img.full{width:100%;border-radius:18px;display:block}
+.spec td{font-size:15px;padding:7px 14px 7px 0;border-bottom:1px solid var(--graphite-line)}
+.spec td:first-child{color:var(--graphite-muted);font-weight:600}
+.shots{display:flex;gap:18px;align-items:flex-start}.shots img{border-radius:14px;display:block}
+</style>
+</head>
+<body>
+
+<!-- 1. Обложка -->
+<section class="page dark">
+  <img src="../01_LOGO/PNG/logo-mark-inverse-512.png" style="width:120px" alt="">
+  <div style="position:absolute;left:88px;bottom:150px">
+    <div class="k">Brand Guide · v1.0</div>
+    <h1>Сначала процесс<br><span class="b">Потом технология</span></h1>
+  </div>
+  <div style="position:absolute;right:-160px;top:90px;width:640px;height:640px;opacity:.06;background:url(../01_LOGO/PNG/logo-mark-mono-white-1024.png) center/contain no-repeat"></div>
+  <div class="num">АВТОМАТИЗАЦИЯ БИЗНЕС-ПРОЦЕССОВ</div>
+</section>
+
+<!-- 2. Платформа -->
+<section class="page">
+  <div class="k">01 · Платформа бренда</div>
+  <div class="row">
+    <div class="col">
+      <h2>Помогаю бизнесу перейти от&nbsp;ручных операций к&nbsp;<span class="b">системной автоматизации</span></h2>
+      <p class="mut">Сфера: автоматизация бизнес-процессов, AI-инструменты, разработка цифровых решений.</p>
+    </div>
+    <div class="col">
+      <div class="card" style="margin-bottom:16px"><h3>Философия</h3>
+        <p>«Сначала процесс. Потом технология»<br>«Выключаем ручной режим»<br>«Из ручных процессов — в систему»</p></div>
+      <div class="card"><h3>Характер</h3>
+        <p>Современный · технологичный · минималистичный · уверенный · структурный · премиальный, но не пафосный.</p>
+        <p class="mut">Не используем: роботов, мозги, нейросетевые узоры, случайные градиенты, свечения, перегруженную графику.</p></div>
+    </div>
+  </div>
+  <div class="num">02</div>
+</section>
+
+<!-- 3. Логотип -->
+<section class="page">
+  <div class="k">02 · Логотип</div>
+  <h2>Знак — модульная система</h2>
+  <div class="tiles">
+    <div class="tile" style="background:var(--offwhite-surface)"><img src="../01_LOGO/PNG/logo-mark-primary-512.png" alt=""><span>Основной</span></div>
+    <div class="tile" style="background:var(--graphite);color:var(--offwhite)"><img src="../01_LOGO/PNG/logo-mark-inverse-512.png" alt=""><span>Инверсный</span></div>
+    <div class="tile" style="background:var(--graphite);color:var(--offwhite)"><img src="../01_LOGO/PNG/logo-mark-mono-white-512.png" alt=""><span>Одноцветный светлый</span></div>
+    <div class="tile" style="background:var(--offwhite-surface)"><img src="../01_LOGO/PNG/logo-mark-mono-graphite-512.png" alt=""><span>Одноцветный графитовый</span></div>
+  </div>
+  <div class="row" style="margin-top:22px">
+    <div class="col"><p>Три контурных модуля — процессы, которые мы выстраиваем. Пять малых модулей — система, которая из них получается; синий модуль — активное, автоматизированное звено.</p></div>
+    <div class="col"><p class="mut">Геометрия знака утверждена и берётся только из <b>logo-mark.original.svg</b>. Не перерисовывать, не менять пропорции, положение и количество модулей.</p></div>
+  </div>
+  <div class="num">03</div>
+</section>
+
+<!-- 4. Охранное поле -->
+<section class="page">
+  <div class="k">02 · Логотип</div>
+  <div class="row">
+    <div class="col">
+      <h2>Охранное поле и&nbsp;минимальный размер</h2>
+      <p><b>Охранное поле = ¼ ширины знака</b> со всех сторон (≈ высота одного контурного модуля пополам). В эту зону не заходят текст, края кадра и другие элементы.</p>
+      <p><b>Минимальный размер:</b> 24 px на экране, 8 мм в печати. Меньше — только фавикон на подложке.</p>
+      <p><b>Водяной знак на видео:</b> 72–96 px по ширине кадра 1080, верхний левый угол безопасной зоны (72 / 260 px), прозрачность 60–70%.</p>
+      <p class="mut">Сетка знака: 390 ед. Модуль 180, обводка 38, радиусы 42 / 16, зазор 30, малый модуль 50 (радиус 12), шаг 65.</p>
+    </div>
+    <div class="col">
+      <div class="cs"><div class="zone"></div><img src="../01_LOGO/PNG/logo-mark-primary-512.png" alt=""><i style="left:6px;top:20px">¼</i><i style="right:10px;bottom:20px">¼</i></div>
+      <div class="row" style="justify-content:center;gap:40px;align-items:flex-end;margin-top:16px">
+        <img src="../01_LOGO/PNG/logo-mark-primary-256.png" style="width:24px" alt=""><img src="../01_LOGO/PNG/logo-mark-primary-256.png" style="width:48px" alt=""><img src="../01_LOGO/PNG/logo-mark-primary-256.png" style="width:96px" alt="">
+      </div>
+      <p class="mut" style="text-align:center;margin-top:10px">24 · 48 · 96 px</p>
+    </div>
+  </div>
+  <div class="num">04</div>
+</section>
+
+<!-- 5. Локапы и подложки -->
+<section class="page dark">
+  <div class="k">02 · Логотип</div>
+  <h2>Локапы, подложки, аватарки</h2>
+  <div class="row" style="align-items:center">
+    <div class="col"><img src="../01_LOGO/PNG/logo-lockup-horizontal-dark-bg-1024.png" style="width:100%" alt=""></div>
+    <div class="col" style="flex:.6"><img src="../01_LOGO/PNG/logo-lockup-vertical-dark-bg-1024.png" style="width:220px" alt=""></div>
+  </div>
+  <div class="row" style="margin-top:40px;align-items:center">
+    <img src="../01_LOGO/PNG/logo-app-icon-light-256.png" style="width:120px" alt="">
+    <img src="../01_LOGO/PNG/logo-app-icon-dark-256.png" style="width:120px;outline:1px solid var(--graphite-line);border-radius:28px" alt="">
+    <img src="../01_LOGO/PNG/logo-app-icon-blue-256.png" style="width:120px" alt="">
+    <img src="../01_LOGO/PNG/logo-avatar-circle-light-256.png" style="width:120px" alt="">
+    <img src="../01_LOGO/PNG/logo-avatar-circle-dark-256.png" style="width:120px;outline:1px solid var(--graphite-line);border-radius:50%" alt="">
+    <div class="col"><p class="mut">Для соцсетей загружайте <b>logo-avatar-upload-*</b> — квадрат, который площадка сама обрежет в круг. На синей подложке — только одноцветный светлый знак.</p></div>
+  </div>
+  <div class="num">05</div>
+</section>
+
+<!-- 6. Ошибки -->
+<section class="page">
+  <div class="k">02 · Логотип</div>
+  <h2>Так делать нельзя</h2>
+  <div class="tiles bad">
+    <div class="tile" style="background:var(--offwhite-surface)"><img src="../01_LOGO/PNG/logo-mark-primary-512.png" style="transform:scaleX(1.45)" alt=""><span>Растягивать</span></div>
+    <div class="tile" style="background:var(--offwhite-surface)"><img src="../01_LOGO/PNG/logo-mark-primary-512.png" style="transform:rotate(-18deg)" alt=""><span>Поворачивать</span></div>
+    <div class="tile" style="background:var(--offwhite-surface)"><img src="../01_LOGO/PNG/logo-mark-primary-512.png" style="filter:hue-rotate(140deg) saturate(3)" alt=""><span>Менять цвета</span></div>
+    <div class="tile" style="background:var(--graphite-line)"><img src="../01_LOGO/PNG/logo-mark-mono-graphite-512.png" alt=""><span style="color:var(--graphite-muted)">Низкий контраст</span></div>
+    <div class="tile" style="background:var(--offwhite-surface)"><img src="../01_LOGO/PNG/logo-mark-primary-512.png" style="filter:drop-shadow(0 0 18px #1769FF)" alt=""><span>Тени и свечения</span></div>
+    <div class="tile" style="background:linear-gradient(135deg,#1769FF,#F5F4F0)"><img src="../01_LOGO/PNG/logo-mark-primary-512.png" alt=""><span>Пёстрые фоны и градиенты</span></div>
+    <div class="tile" style="background:var(--offwhite-surface)"><img src="../01_LOGO/PNG/logo-mark-primary-512.png" style="opacity:.25" alt=""><span>Бледный знак на светлом</span></div>
+    <div class="tile" style="background:var(--offwhite-surface);overflow:hidden"><img src="../01_LOGO/PNG/logo-mark-primary-512.png" style="max-width:none;width:300px;transform:translate(90px,60px)" alt=""><span>Обрезать краем кадра</span></div>
+  </div>
+  <div class="num">06</div>
+</section>
+
+<!-- 7. Цвета -->
+<section class="page">
+  <div class="k">03 · Цвет</div>
+  <h2>Три цвета. Синий — только акцент</h2>
+  <div class="row">
+    <div class="col sw" style="background:var(--graphite);color:var(--offwhite)">Graphite<small>#111315 · RGB 17 19 21 · основной фон, текст</small></div>
+    <div class="col sw" style="background:var(--offwhite);outline:1px solid var(--offwhite-line)">Off White<small>#F5F4F0 · RGB 245 244 240 · фон, текст на тёмном</small></div>
+    <div class="col sw" style="background:var(--blue);color:var(--offwhite)">Electric Blue<small>#1769FF · RGB 23 105 255 · акцент, активное состояние</small></div>
+  </div>
+  <div class="ratio"><div style="flex:60;background:var(--graphite)"></div><div style="flex:30;background:var(--offwhite-surface)"></div><div style="flex:10;background:var(--blue)"></div></div>
+  <p class="mut" style="margin-top:8px">Пропорция в кадре ≈ 60 / 30 / 10. Один синий акцент на композицию: цифра, ключевое слово, активный модуль или кнопка.</p>
+  <div class="row" style="margin-top:20px">
+    <div class="col"><h3>Служебные оттенки</h3><p class="mut">Не фирменные цвета, а производные для интерфейсных слоёв: поверхность #1B1E21 / #EAE8E2, линии #2C3035 / #D5D2CA, второстепенный текст #9A9EA4 / #5F646B.</p></div>
+    <div class="col"><h3>Контраст</h3><p class="mut">Синий текст на графите — только от 36 px и жирнее. Мелкий текст на синем — Off White.</p></div>
+  </div>
+  <div class="num">07</div>
+</section>
+
+<!-- 8. Типографика -->
+<section class="page">
+  <div class="k">04 · Типографика</div>
+  <div class="row">
+    <div class="col" style="flex:.8">
+      <h2>Manrope</h2>
+      <p style="font-size:24px;font-weight:400">Regular 400</p><p style="font-size:24px;font-weight:500">Medium 500</p><p style="font-size:24px;font-weight:600">Semibold 600</p><p style="font-size:24px;font-weight:700">Bold 700</p><p style="font-size:24px;font-weight:800">ExtraBold 800</p>
+      <p class="mut" style="margin-top:16px">Заголовки — ExtraBold, трекинг −3%. Дескрипторы — капс Medium/Bold с трекингом +16…28%. Тексты — Medium. Курсив и подчёркивания не используем; выделяем цветом.</p>
+    </div>
+    <div class="col scale">
+      <div><small>Display · 120–160 / 800</small><span style="font-size:64px;font-weight:800;letter-spacing:-.035em">Процесс</span></div>
+      <div><small>H1 · 88–112 / 800</small><span style="font-size:44px;font-weight:800;letter-spacing:-.03em">Заголовок поста</span></div>
+      <div><small>H2 · 48–64 / 800</small><span style="font-size:30px;font-weight:800">Подзаголовок</span></div>
+      <div><small>Текст · 36–40 / 500</small><span style="font-size:20px;font-weight:500">Основной текст поста</span></div>
+      <div><small>Надзаголовок · 24–26 / 700, +16%</small><span style="font-size:14px;font-weight:700;letter-spacing:.16em">НАДЗАГОЛОВОК</span></div>
+      <p class="mut" style="margin-top:14px">Размеры — в пикселях кадра 1080. Минимум для видео: 30 px. Минимум для поста: 26 px.</p>
+    </div>
+  </div>
+  <div class="num">08</div>
+</section>
+
+<!-- 9. Графические элементы -->
+<section class="page dark">
+  <div class="k">05 · Графические элементы</div>
+  <div class="row">
+    <div class="col" style="flex:.7">
+      <h2>Всё строится из&nbsp;модулей знака</h2>
+      <table class="spec">
+        <tr><td>Контурный модуль</td><td>180 · обводка 38 · R 42 / 16</td></tr>
+        <tr><td>Малый модуль</td><td>50 · R 12 (24%)</td></tr>
+        <tr><td>Шаг сетки</td><td>65 малых · 210 крупных</td></tr>
+        <tr><td>Тонкая линия</td><td>8 ед. (4–8 px в кадре)</td></tr>
+        <tr><td>Скругления UI</td><td>8 · 14 · 22 · 32 · 44 px</td></tr>
+      </table>
+      <p class="mut" style="margin-top:18px">Стрелки, линии и рамки — круглые концы, прямые углы скругляются радиусом модуля. Никаких диагональных сеток, кругов-«нейронов» и градиентов.</p>
+    </div>
+    <div class="col"><img class="full" src="../10_PREVIEWS/sheet-02-elements-on-dark.png" style="height:600px;object-fit:cover;object-position:left top" alt=""></div>
+  </div>
+  <div class="num">09</div>
+</section>
+
+<!-- 9b. Фирменные приёмы -->
+<section class="page">
+  <div class="k">05 · Фирменные приёмы</div>
+  <h2>Три приёма, по которым узнают бренд</h2>
+  <div class="row">
+    <div class="col"><img class="full" src="../04_LABELS/PNG/2x/label-highlight-dark@2x.png" style="background:var(--offwhite-surface);padding:28px 18px;height:150px;object-fit:contain" alt="">
+      <h3 style="margin-top:18px">1. Слово на синей плашке</h3><p class="mut">Одно ключевое слово или фраза в заголовке — на синей плашке. Только одно выделение на макет.</p></div>
+    <div class="col"><img class="full" src="../04_LABELS/PNG/2x/label-toggle-switch-dark@2x.png" style="background:var(--offwhite-surface);padding:28px 18px;height:150px;object-fit:contain" alt="">
+      <h3 style="margin-top:18px">2. Тумблер «ручной → авто»</h3><p class="mut">Визуальная метафора «Выключаем ручной режим»: в кейсах, «до/после», на финальных экранах.</p></div>
+    <div class="col"><img class="full" src="../07_BACKGROUNDS/PNG/bg-giant-modules-dark-1920x1080.png" style="height:150px;object-fit:cover" alt="">
+      <h3 style="margin-top:18px">3. Гигантский модуль</h3><p class="mut">Модули знака в масштабе кадра уходят за край. Тон фона +1 ступень, синим — один малый модуль.</p></div>
+  </div>
+  <div class="row" style="margin-top:20px"><div class="col card"><h3>Ленточные титры</h3><p class="mut">Для видео: каждая строка заголовка на своей плашке, ключевая строка — синяя (label-headline-bars, overlay-reels-title-accent).</p></div></div>
+  <div class="num">09b</div>
+</section>
+
+<!-- 10. Иконки и плашки -->
+<section class="page">
+  <div class="k">06 · Иконки и плашки</div>
+  <div class="row">
+    <div class="col">
+      <h3>Иконки</h3>
+      <p class="mut">Сетка 48, обводка 3, круглые концы. В каждой иконке один «акцентный модуль» — он синий в акцентных версиях. В одном ряду — только один стиль: все контурные или все в плитках.</p>
+      <img class="full" src="../10_PREVIEWS/sheet-03-icons-light.png" style="height:420px;object-fit:cover;object-position:left top" alt="">
+    </div>
+    <div class="col">
+      <h3>Плашки</h3>
+      <p class="mut">Радиус 32, внутренние поля 44 / 36. На видео — тёмные плашки поверх светлого кадра и наоборот. Синяя плашка — одна на кадр. Пустые версии (*-empty) — для своего текста в монтажке.</p>
+      <img class="full" src="../10_PREVIEWS/sheet-04-labels.png" style="height:420px;object-fit:cover;object-position:left top" alt="">
+    </div>
+  </div>
+  <div class="num">10</div>
+</section>
+
+<!-- 11. Видео -->
+<section class="page dark">
+  <div class="k">07 · Видео: Reels и Shorts</div>
+  <div class="row">
+    <div class="col" style="flex:1.2">
+      <h2>Правила оформления видео</h2>
+      <ul>
+        <li>Безопасная зона 1080×1920: слева 72, справа 160, сверху 260, снизу 420 px. Важный текст — только внутри.</li>
+        <li>На экране одновременно не больше двух плашек. Одна мысль — одна плашка.</li>
+        <li>Текст на плашках от 36 px, заголовки 64–88 px — читается на телефоне без звука.</li>
+        <li>Подпись спикера — внизу безопасной зоны в первые 3–5 секунд, затем убрать.</li>
+        <li>Водяной знак — верхний левый угол безопасной зоны, 60–70% прозрачности.</li>
+        <li>Анимация: появление 200–300 мс, сдвиг 24–40 px + прозрачность, ease-out. Без вращений и «прыжков».</li>
+        <li>Финальный экран с CTA — 2–3 секунды, графитовый фон.</li>
+      </ul>
+    </div>
+    <div class="shots">
+      <img src="../06_VIDEO_OVERLAYS/PNG/guide-safe-zones-1080x1920.png" style="width:190px;background:#2C3035" alt="">
+      <img src="../08_SOCIAL_TEMPLATES/PNG/reels-cover-story-1080x1920.png" style="width:190px" alt="">
+    </div>
+  </div>
+  <div class="num">11</div>
+</section>
+
+<!-- 12. Посты -->
+<section class="page">
+  <div class="k">08 · Посты и карусели</div>
+  <div class="row">
+    <div class="col" style="flex:.9">
+      <h2>Правила оформления постов</h2>
+      <ul>
+        <li>Формат 1080×1350, поля 88 px. Сторис 1080×1920: сверху 250, снизу 330 px свободны.</li>
+        <li>Шапка: знак 64 px + надзаголовок; подвал: @аккаунт и стрелка листания.</li>
+        <li>Заголовок 80–120 px, не больше 5 строк. Текст 36–38 px, не больше 6 строк.</li>
+        <li>В карусели чередуем тёмные и светлые слайды, счётчик 01/07 вверху справа.</li>
+        <li>Последний слайд — синий, с одним призывом к действию.</li>
+      </ul>
+    </div>
+    <div class="shots">
+      <img src="../08_SOCIAL_TEMPLATES/PNG/carousel-5-mistakes/carousel-5-mistakes-01-1080x1350.png" style="width:200px" alt="">
+      <img src="../08_SOCIAL_TEMPLATES/PNG/carousel-5-mistakes/carousel-5-mistakes-02-1080x1350.png" style="width:200px" alt="">
+      <img src="../08_SOCIAL_TEMPLATES/PNG/expert-post-post-1080x1350.png" style="width:200px" alt="">
+    </div>
+  </div>
+  <div class="num">12</div>
+</section>
+
+<!-- 13. Композиция -->
+<section class="page dark">
+  <div class="k">09 · Композиция</div>
+  <h2>Композиция и сочетания</h2>
+  <div class="row">
+    <div class="col card"><h3>Модульная сетка</h3><p class="mut">Элементы выравниваются по левому краю и общей сетке. Крупные модули можно уводить за край кадра — это создаёт масштаб и не мешает тексту.</p></div>
+    <div class="col card"><h3>Один акцент</h3><p class="mut">Синий — в одном месте композиции. Если синяя плашка — цифры и иконки на ней светлые.</p></div>
+    <div class="col card"><h3>Воздух</h3><p class="mut">Минимум 40% площади кадра пустые. Если блок не помещается — делим на два слайда, а не уменьшаем шрифт.</p></div>
+  </div>
+  <div class="shots" style="margin-top:28px">
+    <img src="../08_SOCIAL_TEMPLATES/PNG/case-cover-post-1080x1350.png" style="width:170px" alt="">
+    <img src="../08_SOCIAL_TEMPLATES/PNG/key-number-post-post-1080x1350.png" style="width:170px" alt="">
+    <img src="../08_SOCIAL_TEMPLATES/PNG/quote-post-post-1080x1350.png" style="width:170px" alt="">
+    <img src="../08_SOCIAL_TEMPLATES/PNG/process-explain-post-1080x1350.png" style="width:170px" alt="">
+    <img src="../08_SOCIAL_TEMPLATES/PNG/cta-post-post-1080x1350.png" style="width:170px" alt="">
+  </div>
+  <div class="num">13</div>
+</section>
+
+<!-- 14. Пересборка -->
+<section class="page blue">
+  <div class="k" style="color:var(--offwhite)">10 · Дизайн-токены</div>
+  <h2>Комплект пересобирается из&nbsp;токенов</h2>
+  <p>Цвета, радиусы, толщины и безопасные зоны лежат в <b>design-tokens.json</b> (копия <b>_source/tokens.json</b>). Поменяйте значение и выполните в папке _source:</p>
+  <p style="font-family:Consolas,monospace;font-size:22px;background:rgba(17,19,21,.25);display:inline-block;padding:14px 20px;border-radius:14px">python build.py</p>
+  <p>Все SVG, PNG, контакт-листы, каталог, руководство и ZIP соберутся заново. Для редактирования SVG с живым текстом установите шрифты из папки <b>fonts</b>.</p>
+  <div class="num" style="color:var(--offwhite)">14</div>
+</section>
+
+</body>
+</html>

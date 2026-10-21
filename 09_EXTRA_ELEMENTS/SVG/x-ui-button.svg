@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="315" height="88" viewBox="0 0 315 88"><title>UI: кнопка</title><rect x="0" y="0" width="314.273" height="88" rx="24" fill="#1769FF"/><text x="44.00" y="56.24" font-family="Manrope" font-size="34" font-weight="700" fill="#F5F4F0">Запустить</text><line x1="244.273" y1="44" x2="272.273" y2="44" stroke="#F5F4F0" stroke-width="5" stroke-linecap="round"/><path d="M260.273 32L273.273 44L260.273 56" fill="none" stroke="#F5F4F0" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
