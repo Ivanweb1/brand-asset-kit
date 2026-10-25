@@ -33,4 +33,4 @@ REEL_WORK=work python3 before_after.py light                         # -> work/o
 - `peek.py`, `zonecheck.py` — проверка кадров и зон интерфейса.
 - `setup.sh` — установка окружения.
 - `alt/` — пробные форматы, не утверждены (круг, сплит, кинетическая типографика, наезд на постер).
-- `example/edit.json`, `example/final.mp4` — данные и результат первого ролика.
+- `example/` — первый ролик: `SOURCE.md` (где исходник), `transcript.txt` (вся расшифровка), `edit.json`, `final.mp4`.
