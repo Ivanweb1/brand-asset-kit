@@ -1,11 +1,15 @@
 # Монтаж Reels в фирменном стиле
 
-Код, которым собран утверждённый ролик формата «До / После». Правила формата — в [RULES.md](RULES.md), эталон — `example/final.mp4`.
+Код, которым собран утверждённый ролик формата «До / После».
+
+- [RULES.md](RULES.md) — правила формата (что должно получиться);
+- [PROCESS.md](PROCESS.md) — как монтировать по шагам, с командами и ручными решениями;
+- [HISTORY.md](HISTORY.md) — история правок и отклонённые варианты;
+- `example/final.mp4` — эталон.
 
 ## Установка
 ```bash
-pip install opencv-python-headless cairosvg pillow numpy soundfile sherpa-onnx
-# нужен ffmpeg с фильтром zscale (для HDR с iPhone)
+bash _tools/reels/setup.sh     # пакеты, проверка ffmpeg/zscale, модель распознавания речи
 ```
 
 ## Новый ролик
@@ -27,4 +31,6 @@ REEL_WORK=work python3 before_after.py light                         # -> work/o
 - `before_after.py` — шаблон формата «До / После».
 - `prepare.py` — подготовка исходника и черновика монтаж-листа.
 - `peek.py`, `zonecheck.py` — проверка кадров и зон интерфейса.
+- `setup.sh` — установка окружения.
+- `alt/` — пробные форматы, не утверждены (круг, сплит, кинетическая типографика, наезд на постер).
 - `example/edit.json`, `example/final.mp4` — данные и результат первого ролика.
