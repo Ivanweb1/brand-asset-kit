@@ -17,6 +17,7 @@ bash _tools/reels/setup.sh     # пакеты, проверка ffmpeg/zscale, �
 cd _tools/reels
 # 1. Кусок исходника, звук, расшифровка и черновик монтаж-листа
 python3 prepare.py ~/video/IMG_1234.MOV --start 4 --end 40 --work work
+#    исходник ниже 4K (аватар HeyGen и т. п.): добавить --sharpen 0.5 (1080p) или 0.7 (720p)
 # 2. Править work/edit.json: оставить только чистую речь, расставить заглавные и пунктуацию в словах
 REEL_WORK=work python3 edit.py                  # список слов с индексами и временем в ролике
 # 3. Скопировать before_after.py, поменять тексты и привязки к словам E.wt(i)
@@ -34,4 +35,5 @@ REEL_WORK=work python3 before_after.py light                         # -> work/o
 - `setup.sh` — установка окружения.
 - `alt/` — пробные форматы, не утверждены (круг, сплит, кинетическая типографика, наезд на постер).
 - `ai_agent.py`, `example-ai-agent/` — второй ролик: аватар HeyGen, «ИИ-агент отвечает на заявки» (сценарий, монтаж-лист, `final.mp4`, `SOURCE.md`).
+- `ai_agent_1080.py`, `example-ai-agent-1080/` — тот же ролик из исходника HeyGen 1080p без водяного знака; резче первой версии (см. `SOURCE.md`).
 - `example/` — первый ролик: `SOURCE.md` (где исходник), `transcript.txt` (вся расшифровка), `edit.json`, `final.mp4`.

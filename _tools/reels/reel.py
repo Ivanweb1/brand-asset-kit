@@ -118,7 +118,7 @@ def camera(src, z, fx=540, fy=860, rw=W, rh=H):
     x0 = fx - s * FACE_SRC[0]; y0 = fy - s * FACE_SRC[1]
     x0 = min(0, max(rw - s * SRC_W, x0)); y0 = min(0, max(rh - s * SRC_H, y0))
     M = np.float32([[s, 0, x0], [0, s, y0]])
-    return cv2.warpAffine(src, M, (rw, rh), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+    return cv2.warpAffine(src, M, (rw, rh), flags=cv2.INTER_LANCZOS4, borderMode=cv2.BORDER_REPLICATE)
 
 
 # ---------- shared pieces ----------
