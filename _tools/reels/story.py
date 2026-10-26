@@ -60,9 +60,14 @@ def encode_story(out, render, sfx, captions=None):
            "-c:v", "libx264", "-crf", "14", "-preset", "slow", "-profile:v", "high", "-pix_fmt", "yuv420p",
            "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
            "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", out]
+    # обложка первым кадром: Instagram, галерея и мессенджеры берут превью с него ($REEL_COVER — путь к картинке)
+    cov = os.environ.get("REEL_COVER")
+    cov = np.array(Image.open(cov).convert("RGB").resize((W, H), Image.LANCZOS)) if cov else None
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE); src = Source()
     for i in range(E.NFRAMES):
-        p.stdin.write(np.ascontiguousarray(render(i, i / FPS, src), np.uint8).tobytes())
+        fr = render(i, i / FPS, src)
+        if i == 0 and cov is not None: fr = cov
+        p.stdin.write(np.ascontiguousarray(fr, np.uint8).tobytes())
     p.stdin.close(); p.wait(); print("done", out)
 
 

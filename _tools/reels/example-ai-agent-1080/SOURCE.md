@@ -13,8 +13,9 @@
   cd _tools/reels
   python3 prepare.py raw.mp4 --start 0 --sharpen 0.5 --work work
   cp example-ai-agent-1080/edit.json work/edit.json
-  REEL_WORK=work python3 ai_agent_1080.py light   # -> work/out/reel_ai_agent_1080_light.mp4
+  REEL_COVER=example-ai-agent-1080/cover.jpg REEL_WORK=work python3 ai_agent_1080.py light   # -> work/out/reel_ai_agent_1080_light.mp4
   ```
+- Первый кадр ролика — обложка `cover.jpg` (переменная `REEL_COVER`): Instagram по умолчанию берёт обложку с него.
 - Готовый ролик: `final.mp4` — 24,6 с, 1080×1920, 30 к/с, около 9 Мбит/с, −16 LUFS.
 
 ## Отличия от первой версии
