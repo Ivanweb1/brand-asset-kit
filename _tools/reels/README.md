@@ -33,4 +33,5 @@ REEL_WORK=work python3 before_after.py light                         # -> work/o
 - `peek.py`, `zonecheck.py` — проверка кадров и зон интерфейса.
 - `setup.sh` — установка окружения.
 - `alt/` — пробные форматы, не утверждены (круг, сплит, кинетическая типографика, наезд на постер).
+- `ai_agent.py`, `example-ai-agent/` — второй ролик: аватар HeyGen, «ИИ-агент отвечает на заявки» (сценарий, монтаж-лист, `final.mp4`, `SOURCE.md`).
 - `example/` — первый ролик: `SOURCE.md` (где исходник), `transcript.txt` (вся расшифровка), `edit.json`, `final.mp4`.
