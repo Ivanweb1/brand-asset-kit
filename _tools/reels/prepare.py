@@ -49,7 +49,7 @@ def main():
     wav = os.path.join(a.work, "speech.wav")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", a.media, "-map", "0:a:0", "-c:a", "pcm_s16le", wav], check=True)
     subprocess.run([sys.executable, os.path.join(HERE, "..", "transcribe", "transcribe.py"), wav], check=True)
-    tr = json.load(open(os.path.join(a.work, "speech.words.json")))
+    tr = json.load(open(os.path.join(a.work, "speech.words.json"), encoding="utf-8"))
     print("4/4 черновик монтаж-листа…", file=sys.stderr)
     end = a.end if a.end is not None else 1e9
     segs, words = [], []
@@ -62,8 +62,8 @@ def main():
             words.append([w["word"], w["start"]])
     json.dump({"src0": src0, "segments": segs, "words": words,
                "note": "ЧЕРНОВИК: проверить орфографию/пунктуацию слов, вырезать оговорки и повторы"},
-              open(os.path.join(a.work, "edit.json"), "w"), ensure_ascii=False, indent=1)
-    print(open(os.path.join(a.work, "speech.txt")).read())
+              open(os.path.join(a.work, "edit.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    print(open(os.path.join(a.work, "speech.txt"), encoding="utf-8").read())
     print(f"Готово: {a.work}/edit.json — {len(segs)} кусков, {len(words)} слов")
 
 

@@ -73,14 +73,14 @@ def main():
         if ws:
             phrases.append({"start": round(s, 2), "end": round(e, 2), "text": r.text.strip()})
             words += [{"word": w, "start": t} for w, t in ws]
-    json.dump({"phrases": phrases, "words": words, "pauses": sil}, open(base + ".words.json", "w"), ensure_ascii=False, indent=1)
+    json.dump({"phrases": phrases, "words": words, "pauses": sil}, open(base + ".words.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     fmt = lambda x: "%02d:%02d:%02d,%03d" % (x // 3600, x % 3600 // 60, x % 60, round(x % 1 * 1000) % 1000)
-    with open(base + ".srt", "w") as f:
+    with open(base + ".srt", "w", encoding="utf-8") as f:
         for i, p in enumerate(phrases, 1): f.write(f"{i}\n{fmt(p['start'])} --> {fmt(p['end'])}\n{p['text']}\n\n")
-    with open(base + ".txt", "w") as f:
+    with open(base + ".txt", "w", encoding="utf-8") as f:
         for p in phrases: f.write(f"[{p['start']:7.2f}] {p['text']}\n")
     os.remove(wav)
-    print(open(base + ".txt").read())
+    print(open(base + ".txt", encoding="utf-8").read())
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ import json, os, subprocess, numpy as np, soundfile as sf
 from reel import WORK
 
 FPS = 30
-_D = json.load(open(os.path.join(WORK, "edit.json")))
+_D = json.load(open(os.path.join(WORK, "edit.json"), encoding="utf-8"))
 SRC0 = float(_D["src0"])
 SEGS = [tuple(s) for s in _D["segments"]]
 
