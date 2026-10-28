@@ -34,10 +34,16 @@ def split_state(t):
     return 0.0
 
 
+def push(t, t0, amt, d=0.5):
+    """Плавный наезд на слове: зум растёт на amt за d секунд с замедлением в конце."""
+    return amt * ss(prog(t, t0, d))
+
+
 def z_full(t):
     k = E.seg_of(int(t * FPS))
-    if k <= 1: return 1.10 + 0.06 * (1 - eout(prog(t, 0, 0.8))) + 0.04 * ss(t / S[2])
-    return 1.34 + 0.03 * prog(t, S[8], E.DUR - S[8])
+    if k <= 1: return 1.10 + 0.06 * (1 - eout(prog(t, 0, 0.8))) + 0.04 * ss(t / S[2]) + push(t, E.wt(4) - 0.05, 0.08)
+    # призыв: наезд на «Я разберу», дальше медленный дрейф до конца, чтобы 4 с без плашек кадр жил
+    return 1.34 + 0.03 * prog(t, S[8], E.DUR - S[8]) + push(t, E.wt(43) - 0.05, 0.12) + 0.05 * prog(t, E.wt(44), E.DUR - E.wt(44))
 
 
 @functools.lru_cache(None)
@@ -238,7 +244,7 @@ def render(i, t, src):
         fr = speaker_frame(src, i, lambda f: camera(f, z_full(t), 540, 870))
     else:
         pb = lerp(0, PB, s)
-        z = lerp(1.14, 1.22 + 0.04 * ss(prog(t, S[2], S[8] - S[2])), s)
+        z = lerp(1.14, 1.22 + 0.04 * ss(prog(t, S[2], S[8] - S[2])) + push(t, E.wt(34) - 0.05, 0.05), s)
         rt = int(max(0, pb - 50)); rh = H - rt
         fr = np.empty((H, W, 3), np.uint8); fr[:] = th["bg"]
         fr[rt:] = speaker_frame(src, i, lambda f: camera(f, z, 540, lerp(870, 1190, s) - rt, W, rh))
