@@ -50,8 +50,9 @@ INTRO = [("Так ИИ-агент", OFF, GRAPH), ("отвечает вашим",
          ("клиентам на Авито", OFF, GRAPH), ("пока вы спите", BLUE, OFF)]
 T_INTRO_OUT = 2.25
 CAPS = [  # (начало, конец, строки)
-    (2.9, 6.6, [("23:40 · клиент пишет", OFF, GRAPH)]),
-    (7.1, 11.9, [("Ответ сразу,", OFF, GRAPH), ("даже ночью", BLUE, OFF)]),
+    (2.9, 5.55, [("23:40. Пишет клиент", OFF, GRAPH)]),
+    (5.65, 9.15, [("Отвечает ИИ-агент —", OFF, GRAPH), ("сразу, даже ночью", BLUE, OFF)]),
+    (9.25, 12.1, [("Клиент бронирует,", OFF, GRAPH), ("агент подтверждает", BLUE, OFF)]),
     (12.3, 14.2, [("Утром хозяин видит", OFF, GRAPH), ("готовую бронь", BLUE, OFF)]),
     (14.45, 99, [("Никто не ждал до утра", BLUE, OFF)]),
 ]
@@ -188,7 +189,7 @@ def avatar_ai():
 
 
 # ── пузыри ───────────────────────────────────────────────────────────────────
-BF = 42; LH = 64; PADX = 36; PADY = 26; TEXT_W = 600; RAD = 30; GAP = 64
+CHIP_H = 66; BF = 42; LH = 64; PADX = 36; PADY = 26; TEXT_W = 600; RAD = 30; GAP = 64
 
 
 def wrap(s):
@@ -233,6 +234,20 @@ def bubble(who, s, tm):
     else:
         im.alpha_composite(avatar_ai(), (40, 12))
         d.text((x0 + bw + 14, ty), tm, font=tf, fill=CMUTED + (255,), anchor="lm")
+    # подпись над пузырём: кто пишет — клиент или ИИ-агент
+    lab, bg, fg = ("Клиент", OFF, GRAPH) if who == "me" else ("ИИ-агент", BLUE, OFF)
+    cf = font("ExtraBold", 34); cw = int(cf.getlength(lab)) + 40
+    out = Image.new("RGBA", (SW, bh + CHIP_H)); out.alpha_composite(im, (0, CHIP_H))
+    cd = ImageDraw.Draw(out); cx = x0 + bw - cw if who == "me" else x0
+    cd.rounded_rectangle([cx, 0, cx + cw, CHIP_H - 14], 14, fill=bg + (255,))
+    cd.text((cx + cw / 2, (CHIP_H - 14) / 2 + 1), lab, font=cf, fill=fg + (255,), anchor="mm")
+    return out
+
+
+@functools.lru_cache(None)
+def top_fade(h=110):
+    a = (np.clip(np.linspace(1.8, 0, h), 0, 1) ** 1.5 * 255).astype(np.uint8)
+    im = Image.new("RGBA", (SW, h), CBG + (0,)); im.putalpha(Image.fromarray(np.repeat(a[:, None], SW, 1)))
     return im
 
 
@@ -270,6 +285,7 @@ def screen(t):
     ph = -1
     for a, b in WRITING:
         if a <= t < b: ph = int((t - a) * 4) % 4
+    im.alpha_composite(top_fade(), (0, MSG_Y0))   # уезжающие сообщения мягко уходят под шапку
     im.alpha_composite(top_bar(ph, "23:41" if t >= T_MIN41 else "23:40"), (0, 0))
     return im
 
