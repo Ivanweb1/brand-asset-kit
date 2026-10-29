@@ -8,3 +8,6 @@ _source/motion/renders/
 _source/motion/.hyperframes/
 _source/motion/node_modules/
 _tools/reels/work*/
+
+# Рабочие исходники роликов (HeyGen, съёмка) — не публиковать
+work/
