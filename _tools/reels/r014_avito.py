@@ -49,12 +49,12 @@ T_MIN41 = 9.0                                # часы 23:40 → 23:41
 INTRO = [("Так ИИ-агент", OFF, GRAPH), ("отвечает вашим", OFF, GRAPH),
          ("клиентам на Авито", OFF, GRAPH), ("пока вы спите", BLUE, OFF)]
 T_INTRO_OUT = 2.25
+USE_PLATE_INTRO = False      # заставка-плашка заменена вступлением аватара
 CAPS = [  # (начало, конец, строки)
     (2.9, 5.55, [("23:40. Пишет клиент", OFF, GRAPH)]),
     (5.65, 9.15, [("Отвечает ИИ-агент —", OFF, GRAPH), ("сразу, даже ночью", BLUE, OFF)]),
     (9.25, 12.1, [("Клиент бронирует,", OFF, GRAPH), ("агент подтверждает", BLUE, OFF)]),
     (12.3, 14.2, [("Утром хозяин видит", OFF, GRAPH), ("готовую бронь", BLUE, OFF)]),
-    (14.45, 99, [("Никто не ждал до утра", BLUE, OFF)]),
 ]
 T_WIN = 2.35                                 # окно чата выезжает снизу
 T_NOTE_IN, T_NOTE_OUT = 12.2, 14.15          # уведомление хозяину
@@ -342,7 +342,7 @@ def frame(t, cover=False):
         p = eback(prog(t, T_NOTE_IN, 0.45)) - ss(prog(t, T_NOTE_OUT, 0.35)) * 1.2
         n = notification(); put(fr, n, (W - n.width) / 2, WIN_Y + 24 - 260 * (1 - p), clamp(p * 1.5))
     # надписи
-    if cover or t < T_INTRO_OUT + 0.4:
+    if cover or (USE_PLATE_INTRO and t < T_INTRO_OUT + 0.4):
         out = 0 if cover else ss(prog(t, T_INTRO_OUT, 0.35))
         rows = INTRO; hh = sum(plate(s, 80, fg, bg).height + 12 for s, bg, fg in rows) - 12
         y0 = (H - hh) / 2 - 40 - 260 * out
@@ -352,45 +352,164 @@ def frame(t, cover=False):
             if a <= t < b + 0.3:
                 o = ss(prog(t, b, 0.25))
                 plates(fr, rows, 60, 356, lambda k: clamp(prog(t, a + 0.1 * k, 0.35) - o))
-    out = fr.convert("RGB")
-    z = 1 + 0.035 * ss(prog(t, CAPS[-1][0], DUR - CAPS[-1][0])) if not cover else 1.0
-    if z > 1.0001:   # медленный наезд на финале (RULES §2)
-        w2, h2 = W / z, H / z; x0 = (W - w2) / 2; y0 = (H - h2) * 0.5
-        out = out.transform((W, H), Image.AFFINE, (1 / z, 0, x0, 0, 1 / z, y0), Image.BICUBIC)
-    return np.asarray(out)
+    return np.asarray(fr.convert("RGB"))
 
 
-def main():
+# ── аватар HeyGen: вступление и финал (work/r014/intro.mp4, outro.mp4) ─────────
+CLIP_DIR = SHOT.parent
+CHAT_A, CHAT_B = 2.25, 14.55        # кусок таймлайна чата между аватарами
+FACE, FACE_AT = (590, 950), (540, 870)   # лицо в исходнике → на ~870 px (RULES §2)
+XF = 0.15                           # мягкая склейка
+SUB_Y, SUB_W = 1526, 560
+# слова субтитров со временем начала (расшифровка _tools/transcribe), строки — по смыслу
+INTRO_SUB = [[("Клиент", .34), ("написал", .59), ("на", .99), ("Авито", 1.15)],
+             [("в", 1.92), ("23:40.", 1.93)],
+             [("ИИ-агент", 3.41)],
+             [("проконсультировал", 4.2), ("его", 5.05)],
+             [("и", 5.46), ("поставил", 5.55), ("бронь.", 5.91)]]
+OUTRO_SUB = [[("ИИ-агент", .33), ("работает", 1.68), ("24/7.", 2.13)],
+             [("Напишите", 3.48), ("в", 3.85), ("директ", 3.97)],
+             [("«ЗАЯВКА» —", 4.56), ("покажу,", 5.09)],
+             [("как", 5.53), ("настроить", 5.69), ("такой", 6.17), ("у", 6.41), ("вас.", 6.53)]]
+INTRO_PL = [(.34, 3.3, [("Клиент написал на Авито", OFF, GRAPH), ("в 23:40", BLUE, OFF)], [.34, 1.92]),
+            (3.41, 99, [("ИИ-агент", OFF, GRAPH), ("поставил бронь", BLUE, OFF)], [3.41, 5.46])]
+OUTRO_PL = [(.33, 3.4, [("ИИ-агент работает", OFF, GRAPH), ("24/7", BLUE, OFF)], [.33, 2.13]),
+            (3.48, 99, [("Напишите в директ", OFF, GRAPH), ("«ЗАЯВКА»", BLUE, OFF)], [3.48, 4.56])]
+T_PUSH_CTA = 3.48                   # наезд на призыве (RULES §2: без статичных отрезков)
+
+
+def clip_len(name):
+    out = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0",
+                          str(CLIP_DIR / f"{name}.mp4")], capture_output=True, text=True).stdout
+    return float(out)
+
+
+class Clip:
+    """Кадры исходника по порядку, без загрузки всего видео в память."""
+    def __init__(self, name):
+        self.p = subprocess.Popen(["ffmpeg", "-v", "error", "-i", str(CLIP_DIR / f"{name}.mp4"), "-vf", f"fps={FPS},scale={W}:{H}",
+                                   "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE)
+        self.i, self.last = -1, None
+
+    def at(self, k):
+        while self.i < k:
+            b = self.p.stdout.read(W * H * 3)
+            if len(b) < W * H * 3: break
+            self.last = Image.frombuffer("RGB", (W, H), b); self.i += 1
+        return self.last
+
+
+def camera(im, z):
+    x0 = clamp(FACE[0] - FACE_AT[0] / z, 0, W - W / z); y0 = clamp(FACE[1] - FACE_AT[1] / z, 0, H - H / z)
+    return im.transform((W, H), Image.AFFINE, (1 / z, 0, x0, 0, 1 / z, y0), Image.BICUBIC)
+
+
+@functools.lru_cache(None)
+def sub_shade():   # затемнение под субтитрами: от 1150 px до низа, до 70 % (RULES §6)
+    a = np.clip((np.arange(H)[:, None] - 1150) / (H - 1150), 0, 1) ** 1.2 * 0.7
+    im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); im.putalpha(Image.fromarray((np.repeat(a, W, 1) * 255).astype(np.uint8)))
+    return im
+
+
+def subtitles(fr, lines, t):
+    cur = None
+    for k, ln in enumerate(lines):
+        if t >= ln[0][1] - 0.05: cur = k
+    if cur is None: return
+    ln = lines[cur]; f = font("Bold", 46 * SS); gap = f.getlength(" ")
+    ws = [f.getlength(w) for w, _ in ln]; tw = sum(ws) + gap * (len(ln) - 1)
+    im = Image.new("RGBA", (int(tw) + 8, 80 * SS)); d = ImageDraw.Draw(im); x = 0
+    for (w, ts), ww in zip(ln, ws):   # сказанные слова белые, следующие светло-серые
+        d.text((x, 0), w, font=f, fill=(OFF if t >= ts - 0.05 else (185, 185, 185)) + (255,)); x += ww + gap
+    im = down(im)
+    if im.width > SUB_W + 40: im = im.resize((SUB_W + 40, int(im.height * (SUB_W + 40) / im.width)), Image.LANCZOS)
+    put(fr, im, (W - im.width) / 2, SUB_Y)
+
+
+def avatar_frame(src, t, dur, subs, pls, push_at=None):
+    z = 1.10 + 0.04 * (1 - eout(prog(t, 0, 0.7))) + 0.02 * ss(prog(t, 0.7, dur))   # отъезд в начале, медленный наезд
+    if push_at is not None: z += 0.08 * eout(prog(t, push_at, 0.5))
+    fr = camera(src, z).convert("RGBA"); fr.alpha_composite(sub_shade())
+    for a, b, rows, ts in pls:
+        if a - 0.05 <= t < b + 0.3:
+            o = ss(prog(t, b, 0.25))
+            plates(fr, rows, 66, 356, lambda k: clamp(prog(t, ts[k], 0.32) - o))
+    subtitles(fr, subs, t)
+    return fr.convert("RGB")
+
+
+def xfade(a, b, p): return Image.blend(a, b, ss(p))
+
+
+COVER_T = 1.0
+COVER = [("Клиент написал", OFF, GRAPH), ("на Авито в 23:40", OFF, GRAPH), ("Ответил ИИ-агент", BLUE, OFF)]
+
+
+def make_cover():
+    """Обложка по RULES §9 (как cover.py, но без cairo): кадр ролика, зум 1,4, лицо на 1190 px,
+    заголовок внутри центрального квадрата y 470…1450."""
+    src = Clip("intro").at(int(COVER_T * FPS)); z = 1.4
+    x0 = clamp(FACE[0] - 540 / z, 0, W - W / z); y0 = clamp(FACE[1] - 1190 / z, 0, H - H / z)
+    fr = src.transform((W, H), Image.AFFINE, (1 / z, 0, x0, 0, 1 / z, y0), Image.BICUBIC).convert("RGBA")
+    plates(fr, COVER, 84, 500, lambda k: 1.0)
+    fr.convert("RGB").save(OUT / "cover.jpg", quality=95)
+
+
+def main(peek=None):
     OUT.mkdir(exist_ok=True)
-    cover = Image.fromarray(frame(0, cover=True)); cover.save(OUT / "cover.png")
-    sfx = ([("sfx-pop.mp3", 0.06, 0.12)]
-           + [("sfx-click.mp3" if who == "me" else "sfx-pop.mp3", ta, 0.2 if who == "me" else 0.16) for who, _, ta, _ in CHAT]
-           + [("sfx-pop.mp3", T_NOTE_IN, 0.2)])
+    A, Bo = min(clip_len("intro"), 6.35), clip_len("outro")
+    CH = CHAT_B - CHAT_A; TOT = A + CH + Bo
+    intro, outro = Clip("intro"), Clip("outro")
+
+    def at(i):
+        t = i / FPS
+        if t < A:
+            fr = avatar_frame(intro.at(i), t, A, INTRO_SUB, INTRO_PL)
+            if t > A - XF: fr = xfade(fr, Image.fromarray(frame(CHAT_A)), (t - (A - XF)) / XF)
+        elif t < A + CH:
+            fr = Image.fromarray(frame(CHAT_A + t - A))
+        else:
+            tb = t - A - CH
+            fr = avatar_frame(outro.at(int(round(tb * FPS))), tb, Bo, OUTRO_SUB, OUTRO_PL, T_PUSH_CTA)
+            if tb < XF: fr = xfade(Image.fromarray(frame(CHAT_B)), fr, tb / XF)
+        return fr
+
+    if peek:   # кадры для проверки: work/r014/peek_<t>.png
+        for i in range(int(max(peek) * FPS) + 1):
+            fr = at(i)
+            for s in peek:
+                if int(s * FPS) == i: fr.save(K / "work" / "r014" / f"peek_{s}.png")
+        return
+    sfx = ([("sfx-click.mp3" if who == "me" else "sfx-pop.mp3", A + ta - CHAT_A, 0.2 if who == "me" else 0.16) for who, _, ta, _ in CHAT]
+           + [("sfx-pop.mp3", A + T_NOTE_IN - CHAT_A, 0.2)])
     ins = ["-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
-           "-f", "lavfi", "-t", str(DUR), "-i", "anullsrc=r=48000:cl=stereo"]
-    fl, labs = [], []
+           "-f", "lavfi", "-t", f"{TOT:.3f}", "-i", "anullsrc=r=48000:cl=stereo",
+           "-i", str(CLIP_DIR / "intro.mp4"), "-i", str(CLIP_DIR / "outro.mp4")]
+    oms = int((A + CH) * 1000)
+    fl = [f"[2:a]atrim=0:{A:.3f},loudnorm=I=-14:TP=-1.5,aformat=sample_rates=48000:channel_layouts=stereo,afade=t=out:st={A - 0.08:.3f}:d=0.08[v0]",
+          f"[3:a]loudnorm=I=-14:TP=-1.5,aformat=sample_rates=48000:channel_layouts=stereo,adelay={oms}|{oms}[v1]"]
+    labs = ["[v0]", "[v1]"]
     for j, (f, t, v) in enumerate(sfx):
         ins += ["-i", str(K / "11_MOTION" / f)]; ms = int(t * 1000)
-        fl.append(f"[{j + 2}:a]aformat=sample_rates=48000:channel_layouts=stereo,volume={v},adelay={ms}|{ms}[s{j}]")
+        fl.append(f"[{j + 4}:a]aformat=sample_rates=48000:channel_layouts=stereo,volume={v},adelay={ms}|{ms}[s{j}]")
         labs.append(f"[s{j}]")
     fl.append(f"[1:a]{''.join(labs)}amix=inputs={1 + len(labs)}:normalize=0:duration=first,alimiter=limit=0.95[a]")
     cmd = ["ffmpeg", "-v", "error", "-y", *ins, "-filter_complex", ";".join(fl), "-map", "0:v", "-map", "[a]",
            "-c:v", "libx264", "-crf", "14", "-preset", "slow", "-profile:v", "high", "-pix_fmt", "yuv420p",
            "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
            "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", str(OUT / "final.mp4")]
+    make_cover()
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
-    first = np.asarray(cover.convert("RGB"))   # обложка первым кадром
-    for i in range(int(DUR * FPS)):
-        fr = first if i == 0 else frame(i / FPS)
-        p.stdin.write(np.ascontiguousarray(fr, np.uint8).tobytes())
-    p.stdin.close(); p.wait(); print("done", OUT / "final.mp4")
+    cover = OUT / "cover.jpg"   # обложка первым кадром
+    for i in range(int(round(TOT * FPS))):
+        fr = Image.open(cover).convert("RGB").resize((W, H)) if i == 0 and cover.exists() else at(i)
+        p.stdin.write(np.ascontiguousarray(np.asarray(fr.convert("RGB")), np.uint8).tobytes())
+    p.stdin.close(); p.wait(); print("done", OUT / "final.mp4", f"{TOT:.2f} s")
 
 
 if __name__ == "__main__":
     import sys
-    if len(sys.argv) > 1 and sys.argv[1] == "peek":   # python r014_avito.py peek 1 5.5 8 …  -> work/r014/peek_*.png
-        for s in sys.argv[2:]:
-            Image.fromarray(frame(float(s))).save(K / "work" / "r014" / f"peek_{s}.png")
-        Image.fromarray(frame(0, cover=True)).save(K / "work" / "r014" / "peek_cover.png")
+    if len(sys.argv) > 1 and sys.argv[1] == "peek":   # python r014_avito.py peek 1 5.5 8 …
+        main([float(s) for s in sys.argv[2:]])
     else:
         main()
