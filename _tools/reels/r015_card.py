@@ -18,7 +18,7 @@ SS = 2
 
 X0 = 96                  # левый край контента
 X_MAX = 820              # ниже 920 px справа колонка кнопок Reels (x > 830)
-TITLE = [("Что в бизнесе", OFF, GRAPH), ("можно перестать", OFF, GRAPH), ("делать руками", BLUE, OFF)]
+TITLE = [("8 процессов", OFF, GRAPH), ("для автоматизации", OFF, GRAPH), ("в любом бизнесе", BLUE, OFF)]
 ROWS = [
     ("Переносить заявки в CRM", "заявки попадают в CRM сами"),
     ("Отвечать клиентам ночью", "бот или AI-агент"),
@@ -29,7 +29,7 @@ ROWS = [
     ("Искать нужный документ", "поиск по базе документов"),
     ("Отвечать новичкам на вопросы", "база знаний и бот"),
 ]
-ROW_Y0, ROW_H = 884, 94
+ROW_Y0, ROW_H = 862, 94
 TG_W, TG_H = 92, 50
 TX = X0 + TG_W + 30
 
@@ -153,14 +153,13 @@ def frame(t, push=True):
         p = eout(prog(t, T_TITLE[k], 0.38)); sp = plate(s, 78, fg, bg)
         put(fr, sp, (W - sp.width) / 2, y + 34 * (1 - p), p); y += sp.height + 12
     p = eout(prog(t, T_SUB, 0.35)); sub_y = y + 22 + 16 * (1 - p)
-    put(fr, text("8 РУТИННЫХ ЗАДАЧ", 28, "Bold", MUTED), X0, sub_y + 4, p)
     # счётчик «ВРУЧНУЮ N»: убывает с каждым кликом, на нуле загорается синим
     done = sum(1 for tf in T_FLIP if t >= tf + 0.08)
     zero = eback(prog(t, T_ZERO, 0.35))
     cp, nx = counter_plate(len(ROWS) - done, zero > 0)
     cs = 1 + 0.12 * (1 - zero) * (zero > 0)
     if cs != 1: cp = cp.resize((int(cp.width * cs), int(cp.height * cs)), Image.LANCZOS)
-    cx = X_MAX + 30 - cp.width; cy = sub_y - 16 - (cp.height - 64) / 2
+    cx = (W - cp.width) / 2; cy = sub_y - 16 - (cp.height - 64) / 2   # счётчик по центру под заголовком
     put(fr, cp, cx, cy, p)
     roll = eout(prog(t, max([tf + 0.08 for tf in T_FLIP if t >= tf + 0.08], default=-9), 0.25))
     n_new, n_old = len(ROWS) - done, len(ROWS) - done + 1
