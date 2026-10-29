@@ -367,15 +367,19 @@ INTRO_SUB = [[("Клиент", .34), ("написал", .59), ("на", .99), ("�
              [("ИИ-агент", 3.41)],
              [("проконсультировал", 4.2), ("его", 5.05)],
              [("и", 5.46), ("поставил", 5.55), ("бронь.", 5.91)]]
-OUTRO_SUB = [[("ИИ-агент", .33), ("работает", 1.68), ("24/7.", 2.13)],
-             [("Напишите", 3.48), ("в", 3.85), ("директ", 3.97)],
+OUTRO_START = 3.42                  # финал — только призыв: «ИИ-агент работает 24/7» вырезано (решение Ивана)
+OUTRO_SUB = [[("Напишите", 3.48), ("в", 3.85), ("директ", 3.97)],
              [("«ЗАЯВКА» —", 4.56), ("покажу,", 5.09)],
              [("как", 5.53), ("настроить", 5.69), ("такой", 6.17), ("у", 6.41), ("вас.", 6.53)]]
-INTRO_PL = [(.34, 3.3, [("Клиент написал на Авито", OFF, GRAPH), ("в 23:40", BLUE, OFF)], [.34, 1.92]),
-            (3.41, 99, [("ИИ-агент", OFF, GRAPH), ("поставил бронь", BLUE, OFF)], [3.41, 5.46])]
-OUTRO_PL = [(.33, 3.4, [("ИИ-агент работает", OFF, GRAPH), ("24/7", BLUE, OFF)], [.33, 2.13]),
-            (3.48, 99, [("Напишите в директ", OFF, GRAPH), ("«ЗАЯВКА»", BLUE, OFF)], [3.48, 4.56])]
-T_PUSH_CTA = 3.48                   # наезд на призыве (RULES §2: без статичных отрезков)
+INTRO_PL = []                       # во вступлении только субтитры: плашки повторяли их (решение Ивана)
+OUTRO_PL = [(3.48, 99, [("Напишите в директ", OFF, GRAPH), ("«ЗАЯВКА»", BLUE, OFF)], [3.48, 4.56])]
+T_PUSH_CTA = 4.56                   # наезд на «ЗАЯВКА» (RULES §2: без статичных отрезков)
+
+
+def shift(lst, d):
+    """Сдвигает времена слов/плашек финала к началу обрезанного куска."""
+    if isinstance(lst[0][0], tuple): return [[(w, ts - d) for w, ts in ln] for ln in lst]
+    return [(a - d, b - d, rows, [x - d for x in ts]) for a, b, rows, ts in lst]
 
 
 def clip_len(name):
@@ -457,7 +461,8 @@ def make_cover():
 
 def main(peek=None):
     OUT.mkdir(exist_ok=True)
-    A, Bo = min(clip_len("intro"), 6.35), clip_len("outro")
+    A, Bo = min(clip_len("intro"), 6.35), clip_len("outro") - OUTRO_START
+    osub, opl = shift(OUTRO_SUB, OUTRO_START), shift(OUTRO_PL, OUTRO_START)
     CH = CHAT_B - CHAT_A; TOT = A + CH + Bo
     intro, outro = Clip("intro"), Clip("outro")
 
@@ -470,7 +475,7 @@ def main(peek=None):
             fr = Image.fromarray(frame(CHAT_A + t - A))
         else:
             tb = t - A - CH
-            fr = avatar_frame(outro.at(int(round(tb * FPS))), tb, Bo, OUTRO_SUB, OUTRO_PL, T_PUSH_CTA)
+            fr = avatar_frame(outro.at(int(round((tb + OUTRO_START) * FPS))), tb, Bo, osub, opl, T_PUSH_CTA - OUTRO_START)
             if tb < XF: fr = xfade(Image.fromarray(frame(CHAT_B)), fr, tb / XF)
         return fr
 
@@ -487,7 +492,7 @@ def main(peek=None):
            "-i", str(CLIP_DIR / "intro.mp4"), "-i", str(CLIP_DIR / "outro.mp4")]
     oms = int((A + CH) * 1000)
     fl = [f"[2:a]atrim=0:{A:.3f},loudnorm=I=-14:TP=-1.5,aformat=sample_rates=48000:channel_layouts=stereo,afade=t=out:st={A - 0.08:.3f}:d=0.08[v0]",
-          f"[3:a]loudnorm=I=-14:TP=-1.5,aformat=sample_rates=48000:channel_layouts=stereo,adelay={oms}|{oms}[v1]"]
+          f"[3:a]atrim=start={OUTRO_START},asetpts=PTS-STARTPTS,afade=t=in:d=0.03,loudnorm=I=-14:TP=-1.5,aformat=sample_rates=48000:channel_layouts=stereo,adelay={oms}|{oms}[v1]"]
     labs = ["[v0]", "[v1]"]
     for j, (f, t, v) in enumerate(sfx):
         ins += ["-i", str(K / "11_MOTION" / f)]; ms = int(t * 1000)
