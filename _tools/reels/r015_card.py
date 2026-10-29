@@ -9,7 +9,7 @@ import os, pathlib, subprocess, functools
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-W, H, FPS, DUR = 1080, 1920, 30, 11.0
+W, H, FPS, DUR = 1080, 1920, 30, 5.0
 K = pathlib.Path(__file__).resolve().parents[2]
 OUT = pathlib.Path(__file__).resolve().parent / "example-r015-card"
 GRAPH = (17, 19, 21); OFF = (245, 244, 240); BLUE = (23, 105, 255)
@@ -34,11 +34,11 @@ TG_W, TG_H = 92, 50
 TX = X0 + TG_W + 30
 
 # тайминг: клики курсора ускоряются к концу списка
-T_TITLE = [0.15, 0.30, 0.45]
-T_ROW = [1.0 + 0.09 * k for k in range(len(ROWS))]
-_GAPS = [0.8, 0.72, 0.64, 0.56, 0.5, 0.45, 0.42]
-T_FLIP = [2.4 + sum(_GAPS[:k]) for k in range(len(ROWS))]
-T_PUSH = T_FLIP[-1] + 0.75
+T_TITLE = [0.08, 0.18, 0.28]
+T_ROW = [0.5 + 0.06 * k for k in range(len(ROWS))]
+_GAPS = [0.55, 0.5, 0.46, 0.42, 0.38, 0.35, 0.32]
+T_FLIP = [1.3 + sum(_GAPS[:k]) for k in range(len(ROWS))]
+T_PUSH = T_FLIP[-1] + 0.75   # после DUR: ролик кончается сразу после последнего клика
 
 
 def clamp(x, a=0.0, b=1.0): return max(a, min(b, x))
