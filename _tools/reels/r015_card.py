@@ -1,0 +1,163 @@
+"""Ролик-шпаргалка «Что в бизнесе можно перестать делать руками» (сценарий R015).
+
+Без речи: заголовок + 8 задач, тумблеры по очереди щёлкают «ручной → авто».
+Только PIL + numpy (без cairosvg), поэтому работает и на Windows.
+
+    python r015_card.py            # -> example-r015-card/final.mp4, card.png
+"""
+import os, pathlib, subprocess, functools
+import numpy as np
+from PIL import Image, ImageDraw, ImageFont
+
+W, H, FPS, DUR = 1080, 1920, 30, 10.0
+K = pathlib.Path(__file__).resolve().parents[2]
+OUT = pathlib.Path(__file__).resolve().parent / "example-r015-card"
+GRAPH = (17, 19, 21); OFF = (245, 244, 240); BLUE = (23, 105, 255)
+SURF = (27, 30, 33); LINE = (44, 48, 53); MUTED = (154, 158, 164); BLUE_TXT = (120, 170, 255)
+SS = 2
+
+X0 = 96                  # левый край контента
+X_MAX = 820              # ниже 920 px справа колонка кнопок Reels (x > 830)
+TITLE = [("Что в бизнесе", OFF, GRAPH), ("можно перестать", OFF, GRAPH), ("делать руками", BLUE, OFF)]
+ROWS = [
+    ("Переносить заявки в CRM", "заявки попадают в CRM сами"),
+    ("Отвечать клиентам ночью", "бот или AI-агент"),
+    ("Напоминать об оплате", "рассылка по сроку счёта"),
+    ("Делать счета и акты", "документ по шаблону из CRM"),
+    ("Собирать отчёт за неделю", "дашборд обновляется сам"),
+    ("Ставить задачи после сделки", "создаются по статусу сделки"),
+    ("Искать нужный документ", "поиск по базе документов"),
+    ("Отвечать новичкам на вопросы", "база знаний и бот"),
+]
+ROW_Y0, ROW_H = 884, 94
+TG_W, TG_H = 92, 50
+TX = X0 + TG_W + 30
+
+# тайминг
+T_TITLE = [0.15, 0.30, 0.45]
+T_SUB = 0.75
+T_ROW = [1.0 + 0.11 * k for k in range(len(ROWS))]
+T_FLIP = [2.3 + 0.55 * k for k in range(len(ROWS))]
+T_PUSH = T_FLIP[-1] + 0.5
+
+
+def clamp(x, a=0.0, b=1.0): return max(a, min(b, x))
+def prog(t, a, d): return clamp((t - a) / d)
+def eout(x): x = clamp(x); return 1 - (1 - x) ** 3
+def ss(x): x = clamp(x); return x * x * (3 - 2 * x)
+def lerp(a, b, p): return a + (b - a) * p
+def mix(c1, c2, p): return tuple(int(round(lerp(a, b, p))) for a, b in zip(c1, c2))
+
+
+@functools.lru_cache(None)
+def font(weight, size):
+    return ImageFont.truetype(str(K / "00_BRAND_GUIDE" / "fonts" / f"Manrope-{weight}.ttf"), size)
+
+
+def down(im): return im.resize((im.width // SS, im.height // SS), Image.LANCZOS)
+
+
+@functools.lru_cache(None)
+def plate(text, size, fg, bg, padx=30, pady=16, r=18):
+    f = font("ExtraBold", size * SS); bb = f.getbbox(text); asc, desc = f.getmetrics()
+    th = asc + desc; w = bb[2] - bb[0] + 2 * padx * SS; h = int(th * 0.86) + 2 * pady * SS
+    im = Image.new("RGBA", (w, h)); d = ImageDraw.Draw(im)
+    d.rounded_rectangle([0, 0, w - 1, h - 1], r * SS, fill=bg + (255,))
+    d.text((padx * SS - bb[0], pady * SS - int(th * 0.07)), text, font=f, fill=fg + (255,))
+    return down(im)
+
+
+@functools.lru_cache(None)
+def text(s, size, weight, color, maxw=None):
+    while True:
+        f = font(weight, size * SS); bb = f.getbbox(s)
+        if maxw is None or (bb[2]) / SS <= maxw or size <= 20: break
+        size -= 1
+    asc, desc = f.getmetrics()
+    im = Image.new("RGBA", (bb[2] + 4, asc + desc)); ImageDraw.Draw(im).text((0, 0), s, font=f, fill=color + (255,))
+    return down(im)
+
+
+def toggle(p):
+    im = Image.new("RGBA", (TG_W * SS, TG_H * SS)); d = ImageDraw.Draw(im)
+    d.rounded_rectangle([0, 0, TG_W * SS - 1, TG_H * SS - 1], TG_H * SS // 2,
+                        fill=mix(SURF, BLUE, p) + (255,), outline=mix((90, 95, 102), BLUE, p) + (255,), width=3 * SS)
+    kw = TG_H - 14; kx = lerp(7, TG_W - 7 - kw, p)
+    d.ellipse([kx * SS, 7 * SS, (kx + kw) * SS, (7 + kw) * SS], fill=mix(MUTED, OFF, p) + (255,))
+    return down(im)
+
+
+@functools.lru_cache(None)
+def background():
+    im = Image.new("RGB", (W, H), GRAPH); d = ImageDraw.Draw(im)
+    grid = mix(GRAPH, LINE, 0.55)
+    for x in range(0, W, 72): d.line([(x, 0), (x, H)], fill=grid, width=1)
+    for y in range(0, H, 72): d.line([(0, y), (W, y)], fill=grid, width=1)
+    # затемнение к краям, чтобы сетка не спорила с текстом
+    yy, xx = np.mgrid[0:H, 0:W]
+    v = np.clip(((xx - W / 2) / (W * 0.75)) ** 2 + ((yy - H / 2) / (H * 0.62)) ** 2, 0, 1)[..., None]
+    arr = np.array(im, np.float32) * (1 - 0.6 * v) + np.array(GRAPH, np.float32) * 0.6 * v
+    return Image.fromarray(arr.astype(np.uint8)).convert("RGBA")
+
+
+def put(fr, spr, x, y, a=1.0):
+    if a <= 0.003: return
+    if a < 1:
+        spr = spr.copy(); spr.putalpha(spr.getchannel("A").point(lambda v: int(v * a)))
+    fr.alpha_composite(spr, (int(round(x)), int(round(y))))
+
+
+def frame(t, push=True):
+    fr = background().copy()
+    y = 372
+    for k, (s, bg, fg) in enumerate(TITLE):
+        p = eout(prog(t, T_TITLE[k], 0.38)); sp = plate(s, 78, fg, bg)
+        put(fr, sp, X0, y + 34 * (1 - p), p); y += sp.height + 12
+    p = eout(prog(t, T_SUB, 0.35))
+    put(fr, text("ВРУЧНУЮ  →  АВТОМАТИЧЕСКИ", 28, "Bold", MUTED), X0, y + 22 + 16 * (1 - p), p)
+    for k, (task, fix) in enumerate(ROWS):
+        ry = ROW_Y0 + k * ROW_H
+        a = eout(prog(t, T_ROW[k], 0.32)); dy = 22 * (1 - a)
+        f = ss(prog(t, T_FLIP[k], 0.28))
+        if k:  # разделитель
+            sep = Image.new("RGBA", (X_MAX - X0, 2), LINE + (255,)); put(fr, sep, X0, ry - 12 + dy, a)
+        put(fr, toggle(f), X0, ry + 10 + dy, a)
+        put(fr, text(task, 34, "SemiBold", OFF, X_MAX - TX), TX, ry - 2 + dy, a)
+        # «вручную» уходит раньше, чем появляется решение, — без наложения текста
+        f_out, f_in = ss(prog(t, T_FLIP[k], 0.14)), eout(prog(t, T_FLIP[k] + 0.12, 0.3))
+        put(fr, text("вручную", 27, "Medium", MUTED), TX, ry + 42 + dy - 6 * f_out, a * (1 - f_out))
+        put(fr, text(fix, 27, "SemiBold", BLUE_TXT, X_MAX - TX), TX, ry + 42 + dy + 10 * (1 - f_in), a * f_in)
+    out = fr.convert("RGB")
+    z = 1 + 0.03 * ss(prog(t, T_PUSH, DUR - T_PUSH)) if push else 1.0
+    if z > 1.0001:   # медленный наезд, чтобы финальная карточка не стояла статично (RULES §2)
+        w2, h2 = W / z, H / z; x0 = (W - w2) / 2; y0 = (H - h2) * 0.45
+        out = out.transform((W, H), Image.AFFINE, (1 / z, 0, x0, 0, 1 / z, y0), Image.BICUBIC)
+    return np.asarray(out)
+
+
+def main():
+    OUT.mkdir(exist_ok=True)
+    card = Image.fromarray(frame(DUR, push=False)); card.save(OUT / "card.png")
+    sfx = [("sfx-pop.mp3", T_TITLE[0], 0.14)] + [("sfx-click.mp3", t + 0.05, 0.2) for t in T_FLIP]
+    ins = ["-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
+           "-f", "lavfi", "-t", str(DUR), "-i", "anullsrc=r=48000:cl=stereo"]
+    fl, labs = [], []
+    for j, (f, t, v) in enumerate(sfx):
+        ins += ["-i", str(K / "11_MOTION" / f)]; ms = int(t * 1000)
+        fl.append(f"[{j + 2}:a]aformat=sample_rates=48000:channel_layouts=stereo,volume={v},adelay={ms}|{ms}[s{j}]")
+        labs.append(f"[s{j}]")
+    fl.append(f"[1:a]{''.join(labs)}amix=inputs={1 + len(labs)}:normalize=0:duration=first,alimiter=limit=0.95[a]")
+    cmd = ["ffmpeg", "-v", "error", "-y", *ins, "-filter_complex", ";".join(fl), "-map", "0:v", "-map", "[a]",
+           "-c:v", "libx264", "-crf", "14", "-preset", "slow", "-profile:v", "high", "-pix_fmt", "yuv420p",
+           "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
+           "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", str(OUT / "final.mp4")]
+    p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+    cover = np.asarray(card.convert("RGB"))   # обложка первым кадром: готовая карточка
+    for i in range(int(DUR * FPS)):
+        fr = cover if i == 0 else frame(i / FPS)
+        p.stdin.write(np.ascontiguousarray(fr, np.uint8).tobytes())
+    p.stdin.close(); p.wait(); print("done", OUT / "final.mp4")
+
+
+if __name__ == "__main__":
+    main()
