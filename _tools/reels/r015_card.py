@@ -29,18 +29,16 @@ ROWS = [
     ("Искать нужный документ", "поиск по базе документов"),
     ("Отвечать новичкам на вопросы", "база знаний и бот"),
 ]
-ROW_Y0, ROW_H = 862, 94
+ROW_Y0, ROW_H = 864, 94
 TG_W, TG_H = 92, 50
 TX = X0 + TG_W + 30
 
 # тайминг: клики курсора ускоряются к концу списка
 T_TITLE = [0.15, 0.30, 0.45]
-T_SUB = 0.75
 T_ROW = [1.0 + 0.09 * k for k in range(len(ROWS))]
 _GAPS = [0.8, 0.72, 0.64, 0.56, 0.5, 0.45, 0.42]
 T_FLIP = [2.4 + sum(_GAPS[:k]) for k in range(len(ROWS))]
-T_ZERO = T_FLIP[-1] + 0.45          # счётчик «вручную» загорается нулём
-T_PUSH = T_ZERO + 0.3
+T_PUSH = T_FLIP[-1] + 0.75
 
 
 def clamp(x, a=0.0, b=1.0): return max(a, min(b, x))
@@ -106,20 +104,6 @@ def cursor(press=False):
     return down(im)
 
 
-@functools.lru_cache(None)
-def counter_plate(n, on):
-    bg, fg = (BLUE, OFF) if on else (SURF, OFF)
-    lab = text("ВРУЧНУЮ", 24, "Bold", OFF if on else MUTED)
-    num = text(str(n), 40, "ExtraBold", fg)
-    w = 24 + lab.width + 14 + 44 + 16; h = 64
-    im = Image.new("RGBA", (w * SS, h * SS)); ImageDraw.Draw(im).rounded_rectangle(
-        [0, 0, w * SS - 1, h * SS - 1], 18 * SS, fill=bg + (255,),
-        outline=(BLUE if on else LINE) + (255,), width=2 * SS)
-    im = down(im)
-    im.alpha_composite(lab, (24, (h - lab.height) // 2 + 1))
-    return im, 24 + lab.width + 14   # плашка и x, где стоит цифра
-
-
 def ring(r, a):
     im = Image.new("RGBA", (int(2 * r * SS) + 8, int(2 * r * SS) + 8)); d = ImageDraw.Draw(im)
     d.ellipse([4, 4, 2 * r * SS + 4, 2 * r * SS + 4], outline=BLUE + (int(255 * a),), width=4 * SS)
@@ -152,21 +136,6 @@ def frame(t, push=True):
     for k, (s, bg, fg) in enumerate(TITLE):
         p = eout(prog(t, T_TITLE[k], 0.38)); sp = plate(s, 78, fg, bg)
         put(fr, sp, (W - sp.width) / 2, y + 34 * (1 - p), p); y += sp.height + 12
-    p = eout(prog(t, T_SUB, 0.35)); sub_y = y + 22 + 16 * (1 - p)
-    # счётчик «ВРУЧНУЮ N»: убывает с каждым кликом, на нуле загорается синим
-    done = sum(1 for tf in T_FLIP if t >= tf + 0.08)
-    zero = eback(prog(t, T_ZERO, 0.35))
-    cp, nx = counter_plate(len(ROWS) - done, zero > 0)
-    cs = 1 + 0.12 * (1 - zero) * (zero > 0)
-    if cs != 1: cp = cp.resize((int(cp.width * cs), int(cp.height * cs)), Image.LANCZOS)
-    cx = (W - cp.width) / 2; cy = sub_y - 16 - (cp.height - 64) / 2   # счётчик по центру под заголовком
-    put(fr, cp, cx, cy, p)
-    roll = eout(prog(t, max([tf + 0.08 for tf in T_FLIP if t >= tf + 0.08], default=-9), 0.25))
-    n_new, n_old = len(ROWS) - done, len(ROWS) - done + 1
-    ncol = OFF
-    put(fr, text(str(n_new), 40, "ExtraBold", ncol), cx + nx * cs, cy + 6 + 18 * (1 - roll), p * roll)
-    if done and roll < 1:
-        put(fr, text(str(n_old), 40, "ExtraBold", ncol), cx + nx * cs, cy + 6 - 18 * roll, p * (1 - roll))
     for k, (task, fix) in enumerate(ROWS):
         ry = ROW_Y0 + k * ROW_H
         a = eout(prog(t, T_ROW[k], 0.32)); dy = 22 * (1 - a)
@@ -216,7 +185,7 @@ def main():
     OUT.mkdir(exist_ok=True)
     card = Image.fromarray(frame(DUR, push=False)); card.save(OUT / "card.png")
     sfx = ([("sfx-pop.mp3", T_TITLE[0], 0.14)] + [("sfx-click.mp3", t, 0.22) for t in T_FLIP]
-           + [("sfx-pop.mp3", T_ZERO, 0.2)])
+           )
     ins = ["-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
            "-f", "lavfi", "-t", str(DUR), "-i", "anullsrc=r=48000:cl=stereo"]
     fl, labs = [], []
