@@ -151,7 +151,7 @@ def frame(t, push=True):
     y = 372
     for k, (s, bg, fg) in enumerate(TITLE):
         p = eout(prog(t, T_TITLE[k], 0.38)); sp = plate(s, 78, fg, bg)
-        put(fr, sp, X0, y + 34 * (1 - p), p); y += sp.height + 12
+        put(fr, sp, (W - sp.width) / 2, y + 34 * (1 - p), p); y += sp.height + 12
     p = eout(prog(t, T_SUB, 0.35)); sub_y = y + 22 + 16 * (1 - p)
     put(fr, text("8 РУТИННЫХ ЗАДАЧ", 28, "Bold", MUTED), X0, sub_y + 4, p)
     # счётчик «ВРУЧНУЮ N»: убывает с каждым кликом, на нуле загорается синим
