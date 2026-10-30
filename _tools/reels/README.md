@@ -38,4 +38,5 @@ REEL_WORK=work python3 before_after.py light                         # -> work/o
 - `ai_agent.py`, `example-ai-agent/` — второй ролик: аватар HeyGen, «ИИ-агент отвечает на заявки» (сценарий, монтаж-лист, `final.mp4`, `SOURCE.md`).
 - `ai_agent_1080.py`, `example-ai-agent-1080/` — тот же ролик из исходника HeyGen 1080p без водяного знака; резче первой версии (см. `SOURCE.md`).
 - `r003_report.py`, `example-r003-report/` — третий ролик: аватар HeyGen, «Сотрудник собирает отчёт» (монтаж-лист, обложка, `final.mp4`, `SOURCE.md`).
+- `r011_why.py`, `example-r011-why/` — ролик R011: аватар HeyGen, «Зачем бизнесу автоматизировать процессы», формат «список из трёх пунктов» (монтаж-лист, обложка, `final.mp4`, `SOURCE.md`).
 - `example/` — первый ролик: `SOURCE.md` (где исходник), `transcript.txt` (вся расшифровка), `edit.json`, `final.mp4`.
