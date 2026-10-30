@@ -374,6 +374,19 @@ OUTRO_SUB = [[("Напишите", 3.48), ("в", 3.85), ("директ", 3.97)],
 INTRO_PL = []                       # во вступлении только субтитры: плашки повторяли их (решение Ивана)
 OUTRO_PL = [(3.48, 99, [("Напишите в директ", OFF, GRAPH), ("«ЗАЯВКА»", BLUE, OFF)], [3.48, 4.56])]
 T_PUSH_CTA = 4.56                   # наезд на «ЗАЯВКА» (RULES §2: без статичных отрезков)
+INTRO_MAX = 6.35                    # вступление не длиннее этого
+
+# Другая запись аватара: папка $R014_CLIPS с intro.mp4, outro.mp4 и clip.json — тайминги этой записи
+# (intro_max, outro_start, push_cta, intro_sub, outro_sub, outro_pl_at). Без неё — первая запись (work/r014).
+if os.environ.get("R014_CLIPS"):
+    import json
+    CLIP_DIR = pathlib.Path(os.environ["R014_CLIPS"])
+    _c = json.load(open(CLIP_DIR / "clip.json", encoding="utf-8"))
+    INTRO_MAX, OUTRO_START, T_PUSH_CTA = _c["intro_max"], _c["outro_start"], _c["push_cta"]
+    INTRO_SUB = [[tuple(w) for w in ln] for ln in _c["intro_sub"]]
+    OUTRO_SUB = [[tuple(w) for w in ln] for ln in _c["outro_sub"]]
+    _a, _b = _c["outro_pl_at"]
+    OUTRO_PL = [(_a, 99, OUTRO_PL[0][2], [_a, _b])]
 
 
 def shift(lst, d):
@@ -445,7 +458,7 @@ def avatar_frame(src, t, dur, subs, pls, push_at=None):
 def xfade(a, b, p): return Image.blend(a, b, ss(p))
 
 
-COVER_T = 1.0
+COVER_T = _c.get("cover_t", 1.0) if os.environ.get("R014_CLIPS") else 1.0
 COVER = [("Клиент написал", OFF, GRAPH), ("на Авито в 23:40", OFF, GRAPH), ("Ответил ИИ-агент", BLUE, OFF)]
 
 
@@ -461,7 +474,7 @@ def make_cover():
 
 def main(peek=None):
     OUT.mkdir(exist_ok=True)
-    A, Bo = min(clip_len("intro"), 6.35), clip_len("outro") - OUTRO_START
+    A, Bo = min(clip_len("intro"), INTRO_MAX), clip_len("outro") - OUTRO_START
     osub, opl = shift(OUTRO_SUB, OUTRO_START), shift(OUTRO_PL, OUTRO_START)
     CH = CHAT_B - CHAT_A; TOT = A + CH + Bo
     intro, outro = Clip("intro"), Clip("outro")
@@ -483,7 +496,7 @@ def main(peek=None):
         for i in range(int(max(peek) * FPS) + 1):
             fr = at(i)
             for s in peek:
-                if int(s * FPS) == i: fr.save(K / "work" / "r014" / f"peek_{s}.png")
+                if int(s * FPS) == i: fr.save(CLIP_DIR / f"peek_{s}.png")
         return
     sfx = ([("sfx-click.mp3" if who == "me" else "sfx-pop.mp3", A + ta - CHAT_A, 0.2 if who == "me" else 0.16) for who, _, ta, _ in CHAT]
            + [("sfx-pop.mp3", A + T_NOTE_IN - CHAT_A, 0.2)])
