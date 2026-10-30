@@ -64,6 +64,7 @@ BX0, BX1 = 20, CW - 20                # поле ввода внутри кар�
 BBOT = CHH - 84                       # низ поля ввода
 LINE = (221, 221, 221); TXT = (31, 31, 31); SEND = (217, 119, 87)
 TF = 31; LH = 46; TPAD = 28; ROW = 84; TILE = 124
+BLUR_TEXT = False                     # размыть набранный промпт (R018)
 
 
 @functools.lru_cache(None)
@@ -150,8 +151,12 @@ def composer(t):
     im = Image.new("RGBA", (bw * SS, h * SS)); d = ImageDraw.Draw(im)
     d.rounded_rectangle([0, 0, bw * SS - 1, h * SS - 1], 24 * SS, fill=(255, 255, 255, 255), outline=LINE + (255,), width=2 * SS)
     y = (TPAD - 6) * SS + th * SS
+    txt = Image.new("RGBA", im.size); td = ImageDraw.Draw(txt)
     for k, ln in enumerate(lines):
-        d.text((TPAD * SS, y + k * LH * SS), ln, font=f, fill=TXT + (255,))
+        td.text((TPAD * SS, y + k * LH * SS), ln, font=f, fill=TXT + (255,))
+    if BLUR_TEXT:   # промпт виден как набор, но не читается (его выдают по кодовому слову)
+        txt = txt.filter(ImageFilter.GaussianBlur(11 * SS))
+    im.alpha_composite(txt)
     if lines and t < T_SEND and int(t * 2.2) % 2 == 0:   # курсор ввода
         x = TPAD * SS + f.getlength(lines[-1]) + 4 * SS; yy = y + (len(lines) - 1) * LH * SS
         d.rectangle([x, yy + 8 * SS, x + 3 * SS, yy + 44 * SS], fill=TXT + (255,))
