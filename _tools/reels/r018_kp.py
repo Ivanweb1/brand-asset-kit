@@ -56,28 +56,31 @@ Q.tile = file_card
 Q.BLUR_TEXT = True                 # промпт печатается, но размыт: его выдают по слову «КП» (решение Ивана)
 
 # ── вступление: поток сообщений над аватаром ─────────────────────────────────
-PRE = 1.4                          # до начала речи: стоп-кадр с наездом, сообщения уже сыплются
+PRE = 0.0                          # сообщения сыплются одновременно с речью (решение Ивана)
 HOOK_SUB = [[("Так,", .13)], [("где", .58), ("мой", .74), ("ИИ-агент?", 1.0)]]
-MSGS = [  # (время, отправитель, текст)
-    (0.10, "Ольга · Стройдвор", "Здравствуйте! Пришлите, пожалуйста, КП"),
-    (0.45, "Андрей", "Можно коммерческое на 3 позиции?"),
-    (0.80, "Марина, салон", "Ждём КП до завтра!"),
-    (1.10, "Денис · логистика", "Добрый день, КП готово?"),
-    (1.40, "Ирина", "И нам КП, пожалуйста"),
+MSGS = [  # (время, отправитель, текст, фото — ИИ-портреты из coupon-prototype/social-kit/photos/people)
+    (0.05, "Ольга · Стройдвор", "Здравствуйте! Пришлите, пожалуйста, КП", "olga"),
+    (0.40, "Игорь", "Можно коммерческое на 3 позиции?", "igor"),
+    (0.75, "Марина, салон", "Ждём КП до завтра!", "marina"),
+    (1.05, "Дмитрий · логистика", "Добрый день, КП готово?", "dmitry"),
+    (1.35, "Анна", "И нам КП, пожалуйста", "anna"),
 ]
-COUNT = [(0.10, 3), (0.45, 5), (0.80, 7), (1.10, 9), (1.40, 12)]
+COUNT = [(0.05, 3), (0.40, 5), (0.75, 7), (1.05, 9), (1.35, 12)]
 AV_COL = [(229, 115, 115), (100, 181, 246), (129, 199, 132), (255, 183, 77), (186, 104, 200)]
 NW, NH, NX, NY = 800, 118, 140, 430
 
 
 @functools.lru_cache(None)
 def notif(k):
-    _, who, text = MSGS[k]; w, h = NW * SS, NH * SS
+    _, who, text, photo = MSGS[k]; w, h = NW * SS, NH * SS
     im = Image.new("RGBA", (w, h)); d = ImageDraw.Draw(im)
     d.rounded_rectangle([0, 0, w - 1, h - 1], 32 * SS, fill=(36, 37, 41, 255), outline=(255, 255, 255, 30), width=2 * SS)
     r = 30 * SS; cx, cy = 28 * SS + r, h / 2
-    d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=AV_COL[k] + (255,))
-    d.text((cx, cy + 2 * SS), who[0], font=font("Bold", 28 * SS), fill=(255, 255, 255, 255), anchor="mm")
+    ph = Image.open(WORK / f"av_{photo}.jpg").convert("RGB")      # портрет по плечи: лицо в верхней середине
+    s = ph.width * 0.62; ph = ph.crop(((ph.width - s) / 2, ph.height * 0.02, (ph.width + s) / 2, ph.height * 0.02 + s))
+    ph = ph.resize((2 * r, 2 * r), Image.LANCZOS)
+    m = Image.new("L", (2 * r, 2 * r), 0); ImageDraw.Draw(m).ellipse([0, 0, 2 * r - 1, 2 * r - 1], fill=255)
+    im.paste(ph, (int(cx - r), int(cy - r)), m)
     tx = cx + r + 22 * SS
     d.text((tx, 32 * SS), who, font=font("Bold", 28 * SS), fill=(250, 250, 250, 255), anchor="lm")
     d.text((w - 28 * SS, 32 * SS), "сейчас", font=font("Medium", 22 * SS), fill=(150, 150, 155, 255), anchor="rm")
@@ -95,7 +98,7 @@ def _counter(n):
 
 
 def messages(fr, t, fade=1.0):
-    shown = [k for k, (ta, _, _) in enumerate(MSGS) if t >= ta]
+    shown = [k for k, m in enumerate(MSGS) if t >= m[0]]
     if not shown: return
     n = max(c for ta, c in COUNT if t >= ta); cp = _counter(n)
     put(fr, cp, (W - cp.width) / 2, NY - 82, fade)
@@ -175,7 +178,7 @@ def main(peek=None):
             for s in peek:
                 if int(s * FPS) == i: fr.save(WORK / f"peek_{s}.png")
         return
-    sfx = [("sfx-pop.mp3", ta, 0.22) for ta, _, _ in MSGS]
+    sfx = [("sfx-pop.mp3", m[0], 0.22) for m in MSGS]
     sfx += [("sfx-click.mp3", A + Q.T_CLICK_PLUS, 0.25), ("sfx-click.mp3", A + Q.T_SEND, 0.25)]
     sfx += [("sfx-pop.mp3", A + ta, 0.12) for ta in Q.T_REFS]
     sfx += [("sfx-pop.mp3", A + Q.T_VIEW + 0.1 + k * Q.T_SLIDE, 0.1) for k in range(1, len(Q.SLIDES))]
