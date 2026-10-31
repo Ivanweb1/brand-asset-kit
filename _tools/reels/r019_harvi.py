@@ -181,13 +181,13 @@ def blur_box(im, box, r=BLUR):
     im.paste(c, box[:2])
 
 
-def rich_text(im, d, x, y, s, f, fill, anchor="lm", pad=6):
+def rich_text(im, d, x, y, s, f, fill, anchor="lm", pad=6, r=BLUR):
     """Строка с размытыми кусками {…}."""
     p = plain(s); d.text((x, y), p, font=f, fill=fill, anchor=anchor)
     asc, desc = f.getmetrics(); top = y - (asc + desc) / 2 if anchor[1] == "m" else y
     for a, b in secret_runs(s):
         x0 = x + f.getlength(p[:a]); x1 = x + f.getlength(p[:b])
-        blur_box(im, (x0 - pad, top - pad, x1 + pad, top + asc + desc + pad))
+        blur_box(im, (x0 - pad, top - pad, x1 + pad, top + asc + desc + pad), r)
 WRITING = [(1.0, 1.8), (3.55, 4.2), (4.45, 4.9)]
 T_VIEW = 5.95                     # открывается готовый договор
 T_SCROLL = (6.4, 8.7)
