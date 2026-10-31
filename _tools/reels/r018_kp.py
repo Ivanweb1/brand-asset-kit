@@ -90,7 +90,8 @@ def notif(k):
 
 @functools.lru_cache(None)
 def _counter(n):
-    s = f"{n} новых сообщений"; f = font("ExtraBold", 34 * SS); tw = f.getlength(s)
+    w = "сообщение" if n % 10 == 1 and n % 100 != 11 else "сообщения" if 2 <= n % 10 <= 4 and not 12 <= n % 100 <= 14 else "сообщений"
+    s = f"{n} {'новое' if w == 'сообщение' else 'новых'} {w}"; f = font("ExtraBold", 34 * SS); tw = f.getlength(s)
     w, h = int(tw + 70 * SS), 64 * SS; im = Image.new("RGBA", (w, h)); d = ImageDraw.Draw(im)
     d.rounded_rectangle([0, 0, w - 1, h - 1], h // 2, fill=BLUE + (255,))
     d.text((w / 2, h / 2), s, font=f, fill=OFF + (255,), anchor="mm")
