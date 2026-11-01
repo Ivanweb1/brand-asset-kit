@@ -1,0 +1,12 @@
+:root{--g:#111315;--w:#F5F4F0;--b:#1769FF;--m:#5d6168;--l:#d9d7d0}
+@media (prefers-color-scheme:dark){:root{--g:#F5F4F0;--w:#111315;--m:#9A9EA4;--l:#2C3035;--b:#5b95ff}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--w);color:var(--g);font:16px/1.6 Manrope,system-ui,sans-serif}
+main{max-width:720px;margin:0 auto;padding:48px 16px 64px}
+h1{font-size:32px;line-height:1.2;margin:0 0 8px}
+h2{font-size:20px;margin:32px 0 8px}
+p,li{color:var(--g)}
+.muted{color:var(--m);font-size:14px}
+a{color:var(--b)}
+nav{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:32px;font-size:14px}
+hr{border:0;border-top:1px solid var(--l);margin:40px 0}
