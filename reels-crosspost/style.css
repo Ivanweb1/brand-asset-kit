@@ -10,3 +10,7 @@ p,li{color:var(--g)}
 a{color:var(--b)}
 nav{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:32px;font-size:14px}
 hr{border:0;border-top:1px solid var(--l);margin:40px 0}
+.yt{display:flex;gap:16px;align-items:flex-start;margin-top:32px;padding:20px;border:1px solid var(--l);border-radius:12px}
+.yt h2{margin-top:0}
+.yt-logo{display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--g);font-weight:700;letter-spacing:-.5px;flex:none}
+@media (max-width:520px){.yt{flex-direction:column}}
