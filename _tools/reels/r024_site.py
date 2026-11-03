@@ -1,6 +1,6 @@
 """Ролик «Клиенту нужен сайт» (сценарий R024), 8 с, без голоса.
 
-Чат Telegram с клиентом: «нужен сайт» → «скиньте брендбук и логотип» → два файла →
+Чат Telegram с клиентом: «нужен яркий и сочный дизайн для бренда сырков» → «120 000 ₽» → чек об оплате → «скиньте брендбук и логотип» → два файла →
 экран Claude (как R017/R018): промпт печатается размытым, прикрепляются файлы, отправка →
 браузер: листается готовый сайт 36kopeek.ru → плашка-призыв «САЙТ»: пришлю промпт и скиллы для уникального дизайна.
 
@@ -43,13 +43,33 @@ def client_avatar(d=128):
 T.harvi_avatar = client_avatar
 SUB = "в сети"
 CHAT = [  # (время, кто: in — клиент / out — Иван, текст, файл (имя, размер, тип) | None)
-    (0.15, "in", "Здравствуйте! Нужен сайт для нашего бренда", None),
-    (0.80, "out", "Скиньте брендбук и логотип", None),
-    (1.40, "in", None, ("Брендбук.pdf", "18,4 МБ", "PDF")),
-    (1.70, "in", None, ("Логотип.svg", "36 КБ", "SVG")),
+    (0.15, "in", "Здравствуйте! Нужен яркий и сочный дизайн сайта для бренда сырков", None),
+    (0.75, "out", "120 000 ₽", None),
+    (1.25, "in", None, ("receipt_03.11.2026.pdf", "58,8 КБ", "PDF", "receipt")),   # чек — как в Telegram у Ивана
+    (1.75, "out", "Скиньте брендбук и логотип", None),
+    (2.20, "in", None, ("Брендбук.pdf", "18,4 МБ", "PDF")),
+    (2.45, "in", None, ("Логотип.svg", "36 КБ", "SVG")),
 ]
-A = 2.55                                  # конец чата
+A = 3.2                                  # конец чата
 CHAT_CAPS = [(0.0, A - 0.25, [("Клиенту нужен сайт", OFF, GRAPH)])]
+
+
+@functools.lru_cache(None)
+def receipt_thumb(w=170, h=170):
+    """Превью PDF-чека (размыто): белый лист, значок банка (без бренда), «Итого 120 000 ₽», строки реквизитов."""
+    k = 3; im = Image.new("RGBA", (w * k, h * k), (255, 255, 255, 255)); d = ImageDraw.Draw(im)
+    cx = w * k / 2; d.ellipse([cx - 13 * k, 14 * k, cx + 13 * k, 40 * k], fill=(255, 221, 45))
+    fb = T.ui(15 * k); fr = T.ui(12 * k, False)
+    d.text((14 * k, 58 * k), "Итого", font=fb, fill=(20, 20, 20), anchor="lm")
+    d.text((w * k - 14 * k, 58 * k), "120 000 ₽", font=fb, fill=(20, 20, 20), anchor="rm")
+    d.line([(14 * k, 72 * k), (w * k - 14 * k, 72 * k)], fill=(225, 225, 225), width=k)
+    for j, ww in enumerate([70, 55, 80, 60, 66]):
+        yy = (86 + j * 16) * k
+        d.rounded_rectangle([14 * k, yy - 3 * k, 54 * k, yy + 3 * k], 3 * k, fill=(200, 200, 205))
+        d.rounded_rectangle([w * k - 14 * k - ww * k, yy - 3 * k, w * k - 14 * k, yy + 3 * k], 3 * k, fill=(170, 170, 178))
+    from PIL import ImageFilter
+    im = im.resize((w, h), Image.LANCZOS).filter(ImageFilter.GaussianBlur(4))   # чек размыт (Иван, 03.11)
+    im.putalpha(T.rr_mask(w, h, 14)); return im
 
 
 @functools.lru_cache(None)
@@ -58,9 +78,10 @@ def bubble(k):
     f = T.ui(T.BF, False); tf = T.ui(30, False)
     lines = T.wrap(text, f, T.TEXT_W) if text else []
     tw = max([f.getlength(l) for l in lines] + [0]); fh = 0
+    rc = file is not None and len(file) > 3
     if file:
-        fh = 130; tw = max(tw, 122 + T.ui(40).getlength(file[0]), 300)
-    if lines: tw = max(tw, f.getlength(lines[-1]) + 110)
+        fh = 190 if rc else 130; tw = max(tw, (200 if rc else 122) + T.ui(40).getlength(file[0]), 300)
+    if lines: tw = max(tw, f.getlength(lines[-1]) + (160 if who == "out" else 110))   # место под время и галочки
     bw, bh = int(tw + 2 * T.PADX), int(len(lines) * T.LH + fh + 2 * T.PADY + (8 if lines else 30))
     im = Image.new("RGBA", (T.SW, bh)); d = ImageDraw.Draw(im)
     out = who == "out"; x0 = T.SW - 24 - bw if out else 24
@@ -68,7 +89,12 @@ def bubble(k):
     mut = T.OUTMUTED if out else T.INMUTED; y = T.PADY
     for l in lines:
         d.text((x0 + T.PADX, y + T.LH / 2), l, font=f, fill=T.TXT, anchor="lm"); y += T.LH
-    if file:
+    if file and rc:
+        th = receipt_thumb(); im.alpha_composite(th, (x0 + T.PADX - 6, y))
+        tx0 = x0 + T.PADX + th.width + 16
+        d.text((tx0, y + 40), file[0], font=T.ui(40), fill=T.TXT, anchor="lm")
+        d.text((tx0, y + 92), file[1], font=T.ui(32, False), fill=mut, anchor="lm")
+    elif file:
         r = 50; T.doc_icon(d, x0 + T.PADX + r, y + r + 4, r)
         d.text((x0 + T.PADX + 2 * r + 22, y + 30), file[0], font=T.ui(40), fill=T.TXT, anchor="lm")
         d.text((x0 + T.PADX + 2 * r + 22, y + 80), f"{file[1]} · {file[2]}", font=T.ui(32, False), fill=mut, anchor="lm")
@@ -84,7 +110,9 @@ def chat_screen(t):
         if t < c[0]: break
         b = bubble(k); extra = 12 if k + 1 < len(CHAT) and CHAT[k + 1][1] != c[1] else 0
         items.append((b, y, prog(t, c[0], 0.32))); y += lerp(0, b.height + T.GAP + extra, eout(prog(t, c[0], 0.28)))
+    shift = max(0, y - T.GAP - (T.MSG_Y1 - T.MSG_Y0 - 40))   # лента поднимается, как в Telegram
     for spr, yy, p in items:
+        yy -= shift
         if p >= 1: put(im, spr, 0, T.MSG_Y0 + yy)
         else:
             s = lerp(0.9, 1.0, eback(p)); sp = spr.resize((int(spr.width * s), max(1, int(spr.height * s))), Image.BICUBIC)
@@ -120,16 +148,16 @@ Q.CUR_PLUS = (0.82, 1.0); Q.T_CLICK_PLUS = 1.03
 Q.T_REFS = [1.1, 1.25]
 Q.CUR_SEND = (1.32, 1.52); Q.T_SEND = 1.55
 Q.T_VIEW = 99.0                           # презентации нет — после отправки сразу сайт
-CL = 2.0                                  # длительность экрана Claude
+CL = 1.85                                  # длительность экрана Claude
 Q.CAPS = [(0.0, CL - 0.2, [("Закидываю в Claude", OFF, GRAPH)])]
 
 # ── сайт в браузере ──────────────────────────────────────────────────────────
 BX0, BX1, BY0, BY1 = 90, 990, 660, 1620
 BW, BH = BX1 - BX0, BY1 - BY0; BAR = 74
-SITE_LEN = 3.45
-SCROLL = (0.35, 2.35); SCROLL_TO = 4380   # до блока «Где купить?» (пикселей страницы 1440)
-SITE_CAPS = [(0.05, 1.35, [("Готово", BLUE, OFF)]),
-             (1.45, 99, [("Как сделать уникальный дизайн —", OFF, GRAPH), ("пришлю промпт и скиллы", OFF, GRAPH),
+SITE_LEN = 3.0
+SCROLL = (0.25, 2.0); SCROLL_TO = 4380   # до блока «Где купить?» (пикселей страницы 1440)
+SITE_CAPS = [(0.05, 0.9, [("Готово", BLUE, OFF)]),
+             (1.0, 99, [("Как сделать уникальный дизайн —", OFF, GRAPH), ("пришлю промпт и скиллы", OFF, GRAPH),
                          ("Напишите «САЙТ»", BLUE, OFF)])]
 TOT = A + CL + SITE_LEN
 
@@ -182,13 +210,12 @@ def site_frame(t):
 
 
 # ── сборка ───────────────────────────────────────────────────────────────────
-COVER = [("Клиенту нужен сайт", OFF, GRAPH), ("Брендбук → Claude", BLUE, OFF)]
+COVER = [("Сайт за 120 000 ₽", OFF, GRAPH), ("Брендбук → Claude", BLUE, OFF)]
 
 
 def make_cover():
-    fr = chat_frame(2.3, with_caps=False)
-    dim = Image.new("RGBA", (W, H), (17, 19, 21, 90)); fr.alpha_composite(dim)
-    plates(fr, COVER, 84, 760, lambda k: 1.0)
+    fr = chat_frame(1.75, with_caps=False)              # видны запрос клиента и цена
+    plates(fr, COVER, 84, 450, lambda k: 1.0)
     fr.convert("RGB").save(OUT / "cover.jpg", quality=95)
 
 
