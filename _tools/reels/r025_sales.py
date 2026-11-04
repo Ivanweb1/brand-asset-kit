@@ -1,8 +1,8 @@
-"""Ролик «ИИ-агент сам продаёт сайты» (сценарий R025), ~11 с, без голоса и без автора.
+"""Ролик «ИИ-агент сам продаёт сайты» (сценарий R025), ~8,5 с, без голоса и без автора.
 
 Список чатов Telegram: агент пишет компаниям, текст размыт, видно только «…Делаю такие сайты. Актуально?»
 и превью сайта; счётчик «отправлено» растёт → чат с Ольгой: вопросы, ответы агента, КП →
-«Куда оплатить?» → ссылка → уведомление «Поступила оплата · 35 000 ₽» → плашка-призыв «КЛИЕНТЫ».
+«Куда оплатить?» → ссылка → уведомление плашка банка «Перевод по СБП · +25 000 ₽» → конец (призыв — в описании).
 
 Чат и шапка — из r019_harvi/r024_site. Превью сайтов — первые экраны работ Ивана
 (work/r025/s1…s5.png, work/r024/site-top.png), логотипы в шапке размыты.
@@ -26,13 +26,11 @@ SITES = [WORK / f"s{i}.png" for i in range(1, 6)] + [K / "work" / "r024" / "site
 LINK = (110, 180, 255)
 
 
-# ── превью сайтов: логотипы в шапке размыты ──────────────────────────────────
+# ── превью сайтов: размыты целиком ──────────────────────────────────
 @functools.lru_cache(None)
 def site(i):
     im = Image.open(SITES[i % len(SITES)]).convert("RGB").resize((1440, 900), Image.LANCZOS)
-    for box in [(0, 0, 1440, 95), (1100, 800, 1440, 900)]:      # шапка с логотипом; угол с маркой (Изолон)
-        c = im.crop(box).filter(ImageFilter.GaussianBlur(14)); im.paste(c, box[:2])
-    return im
+    return im.filter(ImageFilter.GaussianBlur(16))             # первый экран размыт целиком (Иван, 04.11)
 
 
 @functools.lru_cache(None)
@@ -154,14 +152,13 @@ CHAT = [  # (время, кто: in — Ольга / out — агент от в�
     (2.30, "in", "Пришлите КП, посмотрим.", None, "18:36"),
     (2.75, "out", None, ("file", "КП — сайт для {Строймонтаж}.pdf", "1,2 МБ · PDF"), "18:36"),
     (3.60, "in", "Всё подходит. Куда оплатить?", None, "18:44"),
-    (4.05, "out", "Ссылка на оплату:\n{pay.example.ru/i/48213}", None, "18:44"),
+    (4.05, "out", "{Ссылка на оплату:}\n{pay.example.ru/i/48213}", None, "18:44"),
 ]
 T_NOTE = 4.5
-CL = 8.6                                   # длительность сцены чата (вместе с призывом)
+CL = T_NOTE + 1.5                          # ролик кончается сразу после оплаты; призыв — в описании (Иван, 04.11)
 CAPS = [(0.0, 2.2, [("Отвечает на вопросы", OFF, GRAPH)]),
         (2.3, 3.85, [("Отправляет КП", OFF, GRAPH)]),
-        (T_NOTE, 5.95, [("Клиент оплатил", BLUE, OFF)])]
-CTA = [(6.1, 99, [("Хотите такого агента?", OFF, GRAPH), ("Напишите «КЛИЕНТЫ»", BLUE, OFF)])]
+        (T_NOTE, 99, [("Клиент оплатил", BLUE, OFF)])]
 TOT = A + CL
 
 
@@ -216,30 +213,24 @@ def chat_screen(t):
 
 @functools.lru_cache(None)
 def note():
-    """Уведомление об оплате — как баннер iOS, без названия банка."""
-    w, h = 880, 168; im = Image.new("RGBA", (w * SS, h * SS)); d = ImageDraw.Draw(im)
-    d.rounded_rectangle([0, 0, w * SS - 1, h * SS - 1], 40 * SS, fill=(36, 37, 41, 250), outline=(255, 255, 255, 30), width=2 * SS)
-    r = 44 * SS; cx, cy = 30 * SS + r, h * SS / 2
-    d.rounded_rectangle([cx - r, cy - r, cx + r, cy + r], 22 * SS, fill=(52, 199, 89))
-    d.text((cx, cy), "₽", font=font("ExtraBold", 50 * SS), fill=(255, 255, 255), anchor="mm")
-    tx = cx + r + 24 * SS
-    d.text((tx, 52 * SS), "Оплата", font=font("Bold", 30 * SS), fill=(250, 250, 250, 255), anchor="lm")
-    d.text(((w - 30) * SS, 52 * SS), "сейчас", font=font("Medium", 22 * SS), fill=(160, 160, 165, 255), anchor="rm")
-    d.text((tx, 108 * SS), "Поступила оплата · 35 000 ₽", font=font("Medium", 32 * SS), fill=(225, 225, 228, 255), anchor="lm")
-    return down(im)
+    """Уведомление об оплате — картинка Ивана (Тинькофф, перевод по СБП, +25 000 ₽), work/r025/payment.png."""
+    im = Image.open(WORK / "payment.png").convert("RGBA"); w = 880
+    im = im.resize((w, round(im.height * w / im.width)), Image.LANCZOS)
+    sh = Image.new("RGBA", (w + 80, im.height + 80)); ImageDraw.Draw(sh).rounded_rectangle([40, 50, 40 + w, 50 + im.height], 40, fill=(0, 0, 0, 150))
+    sh = sh.filter(ImageFilter.GaussianBlur(18)); sh.alpha_composite(im, (40, 40)); return sh
 
 
 def chat_frame(t, with_caps=True, note_y=640):
     fr = background().copy()
-    zoom = 1 + 0.035 * ss(prog(t, CTA[0][0], CL - CTA[0][0]))      # плавный наезд на призыве — без статики
+    zoom = 1 + 0.03 * ss(prog(t, T_NOTE, CL - T_NOTE))             # лёгкий наезд после оплаты — без статики
     c = card(chat_screen(t))
     if zoom > 1: c = c.resize((int(T.CW * zoom), int(T.CHH * zoom)), Image.LANCZOS)
     x, y = T.CX0 - (c.width - T.CW) / 2, T.CY0 - (c.height - T.CHH) / 2
     put(fr, T.card_shadow(), T.CX0 - 80, T.CY0 - 100); put(fr, c, x, y)
     p = eback(prog(t, T_NOTE, 0.45))
     if t >= T_NOTE:
-        n = note(); put(fr, n, (W - n.width) / 2, note_y - 200 * (1 - p), clamp(p * 1.5))
-    if with_caps: caps(fr, t, CAPS); caps(fr, t, CTA, size=56)
+        n = note(); put(fr, n, (W - n.width) / 2, note_y - 40 - 200 * (1 - p), clamp(p * 1.5))
+    if with_caps: caps(fr, t, CAPS)
     return fr
 
 
@@ -248,7 +239,7 @@ COVER = [("ИИ-агент", OFF, GRAPH), ("сам продаёт сайты", B
 
 
 def make_cover():
-    fr = chat_frame(5.3, with_caps=False, note_y=730)               # видны «Пришлите КП», КП и уведомление об оплате
+    fr = chat_frame(5.3, with_caps=False, note_y=790)               # видны «Пришлите КП», КП и уведомление об оплате
     plates(fr, COVER, 76, 430, lambda k: 1.0)
     fr.convert("RGB").save(OUT / "cover.jpg", quality=95)
 
@@ -270,7 +261,7 @@ def main(peek=None):
         return
     sfx = [("sfx-pop.mp3", a, 0.12) for a in T_ROWS]
     sfx += [("sfx-pop.mp3", A + c[0], 0.2) for c in CHAT if c[0] >= 0]
-    sfx += [("sfx-click.mp3", A + T_NOTE, 0.3), ("sfx-pop.mp3", A + CTA[0][0], 0.18)]
+    sfx += [("sfx-click.mp3", A + T_NOTE, 0.3)]
     ins = ["-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
            "-f", "lavfi", "-t", f"{TOT:.3f}", "-i", "anullsrc=r=48000:cl=stereo"]
     fl, labs = [], []
