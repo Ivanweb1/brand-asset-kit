@@ -1,12 +1,12 @@
 """Ролик «Claude + 2ГИС = деньги» (сценарий R031), ~9,5 с, без голоса и без автора.
 
-Формула: [Claude] + [2ГИС] = уведомление «+ 40 000 ₽» → парсинг 2ГИС: карточки компаний листаются,
-у кого нет сайта — метка «Нет сайта», счётчик растёт → список чатов: агент пишет компаниям (как R025) →
+Формула: [Claude] + [2ГИС] = уведомление «+ 40 000 ₽» → парсинг: экраны бота AuditLeadBot —
+«собрано 548» → «Найдено 7 компаний без сайта» + CSV → список чатов: агент пишет компаниям (как R025) →
 переписка с Дмитрием: цена, КП, «Куда платить?» → то же уведомление «+ 40 000 ₽» → конец.
 Призыв — только в описании (правило R025). Сообщения агента выглядят обычными (правило R030).
 
 Логотипы прислал Иван (work/r031/logo-*-src.png), приведены к одной плитке с одинаковым скруглением.
-Экран 2ГИС нарисован: названия, адреса и телефоны размыты.
+Экран парсинга — настоящие кадры бота Ивана AuditLeadBot (work/r031/bot/, из видео IMG_7762).
 
     python r031_2gis.py              # -> example-r031-2gis/final.mp4, cover.jpg
     python r031_2gis.py peek 0.5 2.5 # кадры work/r031/peek_<t>.png
@@ -101,69 +101,41 @@ def formula_frame(t, caps=True, dy=0):
     return fr
 
 
-# ── сцена 2: парсинг 2ГИС (рисованный экран, светлая тема) ────────────────────
+# ── сцена 2: парсинг — настоящие экраны бота Ивана AuditLeadBot (видео IMG_7762, 05.11) ──────
 P_LEN = 2.3
-G_BG, G_CARD, G_TXT, G_MUT, G_GREEN = (240, 241, 243), (255, 255, 255), (30, 32, 36), (128, 134, 142), (26, 170, 32)
-NAMES = ["{Автосервис Мотор}", "{Шиномонтаж 24}", "{Кузовной центр}", "{Автомойка Блеск}", "{СТО на Лесной}",
-         "{Авто-Профи}", "{Ремонт АКПП}", "{Детейлинг Pro}", "{Шины-Диски}", "{Автоэлектрик}", "{Развал-схождение}",
-         "{Тонировка Люкс}", "{Масло-Сервис}", "{Кузовной ремонт}"]
-HAS_SITE = [1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1]
-CH = 250; LY0 = 470
-T_FILTER = 0.35                                      # загорается фильтр «Без сайта»
+BOT = [WORK / "bot" / "full_19.5.png",              # «Стоматология · Казань: в 2ГИС ~550, собрано 548»
+       WORK / "bot" / "full_52.0.png"]              # «Найдено 7 компаний без сайта» + CSV с лидами
+P_SWITCH = 1.15
+
+
+# какой кусок кадра показать (y в px исходника 888×1920): сообщение «собрано 548» и кнопки / «Найдено 7» и CSV
+BOT_Y = [(800, 1640), (1050, 1920)]
 
 
 @functools.lru_cache(None)
-def gcard(k, dim):
-    im = Image.new("RGBA", (T.SW, CH), G_BG + (255,)); d = ImageDraw.Draw(im)
-    d.rounded_rectangle([28, 12, T.SW - 28, CH - 12], 30, fill=G_CARD)
-    x = 70
-    T.rich_text(im, d, x, 62, NAMES[k], T.ui(44), G_TXT)
-    d.text((x, 112), "Автосервис · рейтинг 4," + str(5 + k % 4), font=T.ui(34, False), fill=G_MUT, anchor="lm")
-    T.rich_text(im, d, x, 160, "{ул. Лесная, 12 · +7 916 123-45-67}", T.ui(34, False), G_MUT, r=9)
-    if HAS_SITE[k]:
-        T.rich_text(im, d, x, 206, "{www.site-avto.ru}", T.ui(34, False), (60, 130, 220), r=9)
-    else:
-        f = T.ui(32); w = f.getlength("Нет сайта") + 44
-        d.rounded_rectangle([x, 182, x + w, 230], 24, fill=BLUE)
-        d.text((x + w / 2, 206), "Нет сайта", font=f, fill=OFF, anchor="mm")
-    if dim:                                                     # с сайтом — гаснет
-        a = np.asarray(im).copy(); a[..., 3] = (a[..., 3] * 0.32).astype(np.uint8)
-        bg = Image.new("RGBA", im.size, G_BG + (255,)); bg.alpha_composite(Image.fromarray(a)); im = bg
-    return im
+def bot_shot(k):
+    """Кадр бота в размере экрана Telegram (1170 px), красная метка записи экрана закрашена."""
+    im = Image.open(BOT[k]).convert("RGB"); sc = T.SW / im.width
+    im = im.resize((T.SW, round(im.height * sc)), Image.LANCZOS); d = ImageDraw.Draw(im)
+    box = [int(70 * sc), int(14 * sc), int(232 * sc), int(84 * sc)]
+    col = tuple(int(c) for c in np.asarray(im.crop((box[2] + 30, box[1], box[2] + 70, box[3]))).reshape(-1, 3).mean(0))
+    d.rounded_rectangle(box, 20, fill=col)
+    d.text(((box[0] + box[2]) / 2, (box[1] + box[3]) / 2 + 2), "13:27" if k == 0 else "13:28", font=T.ui(int(31 * sc)), fill=(255, 255, 255), anchor="mm")
+    return im.convert("RGBA"), sc
 
 
-@functools.lru_cache(None)
-def g_head():
-    im = Image.new("RGBA", (T.SW, LY0), G_BG + (255,)); d = ImageDraw.Draw(im)
-    sb = T.empty_chat(SUB).crop((0, 0, T.SW, 125)).convert("L")          # строка состояния — тёмная на светлом
-    dark = Image.new("RGBA", (T.SW, 125), (20, 20, 22, 255)); im.paste(dark, (0, 0), sb.point(lambda v: 255 if v > 150 else 0))
-    lg = Image.open(WORK / "logo-2gis-src.png").convert("RGBA").resize((92, 92), Image.LANCZOS); im.alpha_composite(lg, (50, 150))
-    d.rounded_rectangle([166, 150, T.SW - 50, 242], 46, fill=(255, 255, 255))
-    d.text((210, 196), "Автосервисы · Москва", font=T.ui(40, False), fill=G_TXT, anchor="lm")
-    return im
-
-
-def g_chips(im, t):
-    d = ImageDraw.Draw(im); x = 50; on = t >= T_FILTER
-    for txt, active in [("Открыто", False), ("Рейтинг 4+", False), ("Без сайта", on)]:
-        f = T.ui(34); w = f.getlength(txt) + 56
-        d.rounded_rectangle([x, 290, x + w, 360], 35, fill=BLUE if active else (255, 255, 255))
-        d.text((x + w / 2, 325), txt, font=f, fill=OFF if active else G_TXT, anchor="mm"); x += w + 18
-    n = int(148 * ss(prog(t, T_FILTER, P_LEN - T_FILTER - 0.2))) if on else 0
-    d.text((T.SW - 50, 420), f"Без сайта: {n}", font=T.ui(38), fill=BLUE if on else G_MUT, anchor="rm")
-    d.text((50, 420), "1 240 компаний", font=T.ui(34, False), fill=G_MUT, anchor="lm")
-
-
-def g_screen(t):
-    im = Image.new("RGBA", (T.SW, T.SHW), G_BG + (255,))
-    off = 900 * ss(prog(t, 0.15, P_LEN)) + 260 * t           # список быстро листается
-    on = t >= T_FILTER
-    for k in range(len(NAMES)):
-        y = LY0 + k * CH - off
-        if y > T.SHW or y + CH < LY0 - CH: continue
-        put(im, gcard(k, bool(HAS_SITE[k] and on)), 0, y)
-    im.alpha_composite(g_head(), (0, 0)); g_chips(im, t)
-    return im
+def bot_screen(k, t, dur):
+    """Шапка бота сверху + нужный кусок переписки, вписанный по высоте; лёгкий подъезд снизу — без статики."""
+    im, sc = bot_shot(k); top = int(T.TOP_H * 0.86); body_h = T.SHW - top
+    lift = 70 * (1 - eout(prog(t, 0, dur)))
+    ya, yb = (v * sc for v in BOT_Y[k]); ya += lift; yb = min(yb + lift, im.height)
+    reg = im.crop((0, int(ya), T.SW, int(yb)))
+    f = min(1.0, body_h / reg.height); rw, rh = int(T.SW * f), int(reg.height * f)
+    back = reg.resize((T.SW, body_h), Image.BILINEAR).filter(ImageFilter.GaussianBlur(30))   # поля по бокам — тот же фон
+    scr = Image.new("RGBA", (T.SW, T.SHW)); scr.alpha_composite(back, (0, top))
+    scr.alpha_composite(reg.resize((rw, rh), Image.LANCZOS), ((T.SW - rw) // 2, top + body_h - rh))
+    scr.alpha_composite(im.crop((0, 0, T.SW, top)), (0, 0))
+    return scr
 
 
 def phone_frame(screen, t, cap_list):
@@ -173,7 +145,18 @@ def phone_frame(screen, t, cap_list):
 
 
 P_CAPS = [(0.0, 99, [("Нашёл компании", OFF, GRAPH), ("без сайта", BLUE, OFF)])]
-parse_frame = lambda t: phone_frame(g_screen(t), t, P_CAPS)
+
+
+def parse_frame(t):
+    if t < P_SWITCH:
+        fr = phone_frame(bot_screen(0, t, P_SWITCH), t, P_CAPS)
+        XF = R.XF
+        if t > P_SWITCH - XF:
+            fr = xfade(fr.convert("RGB"), phone_frame(bot_screen(1, 0, P_LEN - P_SWITCH), t, P_CAPS).convert("RGB"),
+                       (t - (P_SWITCH - XF)) / XF)
+        return fr
+    return phone_frame(bot_screen(1, t - P_SWITCH, P_LEN - P_SWITCH), t, P_CAPS)
+
 
 # ── сцена 3: агент пишет компаниям (список чатов из R025, короче) ─────────────
 L_LEN = 1.4
@@ -286,7 +269,7 @@ def main(peek=None):
         for s in peek: at(int(s * FPS)).save(WORK / f"peek_{s}.png")
         return
     sfx = [("sfx-pop.mp3", a, 0.25) for a in (0.0, 0.30, 0.72)]
-    sfx += [("sfx-click.mp3", F_LEN + T_FILTER, 0.25)]
+    sfx += [("sfx-click.mp3", F_LEN + P_SWITCH, 0.25)]
     sfx += [("sfx-pop.mp3", F_LEN + P_LEN + a, 0.12) for a in S.T_ROWS]
     t0 = F_LEN + P_LEN + L_LEN
     sfx += [("sfx-pop.mp3", t0 + m[0], 0.2) for m in MSGS if m[0] >= 0]
