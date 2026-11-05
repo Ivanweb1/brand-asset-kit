@@ -59,8 +59,9 @@ MSGS = [
     (1.60, "sep", "Вторник", None, "", None),
     (1.95, "sep", "Среда", None, "", None),
     (2.30, "sep", "Четверг", None, "", None),
+    (3.00, "lbl", "ИИ-агент ↓", None, "", None),     # подпись для зрителя — вне сообщения
     (3.10, "out", "Анна, добрый день! По КП остались вопросы? Если начнём на этой неделе — первый экран покажу в понедельник.",
-     None, "11:05", AGENT),
+     None, "11:05", None),                         # обычное сообщение, без метки внутри (Иван, 05.11)
     (4.90, "in", "Ой, совсем закрутилась. Давайте начнём. Куда платить?", None, "11:17", None),
     (5.45, "out", "{Ссылка на оплату:}\n{pay.example.ru/i/48213}", None, "11:18", None),
 ]
@@ -88,9 +89,20 @@ def sep(text):
 
 
 @functools.lru_cache(None)
+def label(text):
+    """Подпись над сообщением агента: синяя плашка справа, отдельно от пузыря."""
+    f = T.ui(38); w = int(f.getlength(text) + 52); h = 66
+    im = Image.new("RGBA", (T.SW, h + 4)); d = ImageDraw.Draw(im)
+    x1 = T.SW - 24; d.rounded_rectangle([x1 - w, 0, x1, h], 18, fill=BLUE + (255,))
+    d.text((x1 - w / 2, h / 2), text, font=f, fill=OFF, anchor="mm")
+    return im
+
+
+@functools.lru_cache(None)
 def bubble(m):
     _, who, text, att, tm, tag = m
     if who == "sep": return sep(text)
+    if who == "lbl": return label(text)
     f = T.ui(T.BF, False); tf = T.ui(30, False); out = who == "out"
     lines = []
     for para in (text.split("\n") if text else []): lines += T.wrap(para, f, T.TEXT_W)
