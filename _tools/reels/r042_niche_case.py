@@ -45,9 +45,12 @@ B.MSGS = [
     (0.70, "out", "Попроси Claude собрать концепт-кейс под их нишу. Смотри ↓", None, "18:03", None),
     (T_END, "in", "Показала как концепт под их компанию — сказали «давайте предоплату»!", None, "21:40", None),
 ]
-B.CAPS = [(0.0, B.T_NOTE - 0.15, [("Нет кейса в нише —", OFF, GRAPH), ("а предоплата пришла", BLUE, OFF)]),
+HOOK = [("Кейс в любой нише —", OFF, GRAPH)]           # правка Ивана 07.11: «кейс в любой нише и скрин оплаты»
+HOOK_END = 1.75                                       # хук и уведомление об оплате с первого кадра
+B.CAPS = [(-1.0, HOOK_END, HOOK),                    # хук виден с первого кадра, без проявления
           (B.T_NOTE, 99, [("Предоплата пришла", BLUE, OFF)])]
-B.COVER = [("Нет кейса в нише —", OFF, GRAPH), ("а предоплата пришла", BLUE, OFF)]
+B.COVER = HOOK
+NOTE_Y = 470                                          # уведомление сразу под плашкой хука
 B.sub_at = lambda t: "печатает…" if 0.15 <= t < 0.7 or T_END - 0.45 <= t < T_END else "в сети"
 
 # ── Claude: ниша клиента в промпте + сайт, конкуренты и скилл вложениями, всё размыто ─
@@ -112,17 +115,11 @@ def window(t):
 
 
 def site_layer(t):
-    """Окно появляется с подъёмом, потом мягкий наезд на заголовок и огнетушитель, затем скролл."""
+    """Окно появляется с подъёмом, затем короткий скролл."""
     lay = Image.new("RGBA", (W, H))
     p = eout(prog(t, 0.05, 0.4))
     if p <= 0: return lay
-    put(lay, window(t), WX - 40, WY - 40 + lerp(60, 0, p), p)
-    z = 1 + 0.09 * ss(prog(t, 0.5, 1.6))
-    if z > 1:
-        cx, cy = WX + 6, WY + BAR + VH * 0.4              # левый край держим: логотип не срезается
-        lay = lay.resize((round(W * z), round(H * z)), Image.BICUBIC)
-        ox, oy = cx * z - cx, cy * z - cy
-        lay = lay.crop((int(ox), int(oy), int(ox) + W, int(oy) + H))
+    put(lay, window(t), WX - 40, WY - 40 + lerp(60, 0, p), p)   # без наезда: окно и так во всю ширину (правка Ивана 07.11)
     return lay
 
 
@@ -130,10 +127,20 @@ def site_frame(t):
     fr = background().copy(); fr.alpha_composite(site_layer(t)); S.caps(fr, t, G_CAPS); return fr.convert("RGB")
 
 
+def hook_note(fr, t):
+    """Уведомление об оплате под хуком в начале ролика: стоит с первого кадра, уходит вверх к HOOK_END."""
+    o = ss(prog(t, HOOK_END, 0.25))
+    if o >= 1: return fr
+    fr = fr.convert("RGBA"); n = B.note()
+    put(fr, n, (W - n.width) / 2, NOTE_Y - 40 - 160 * o, 1 - o)
+    return fr
+
+
 def at(i):
     t = i / FPS; XF = 0.18
     if t < A:
-        fr = B.frame(t).convert("RGB")
+        fr = B.frame(t, caps=False)
+        fr = hook_note(fr, t); S.caps(fr, t, B.CAPS); fr = fr.convert("RGB")
         if t > A - XF: fr = xfade(fr, Q.frame(0), (t - (A - XF)) / XF)
     elif t < G0:
         fr = Q.frame(t - A)
@@ -150,9 +157,10 @@ B.at = at
 
 
 def make_cover():
-    """Обложка: хук над первым экраном сайта (до наезда и скролла)."""
-    fr = background().copy(); fr.alpha_composite(site_layer(0.6), (0, 260))   # окно ниже хука, шапка сайта видна
+    """Обложка: хук и уведомление об оплате над первым экраном сайта."""
+    fr = background().copy(); fr.alpha_composite(site_layer(0.6), (0, 380))   # окно ниже хука и оплаты
     plates(fr, B.COVER, 76, 450, lambda k: 1.0)
+    n = B.note(); put(fr, n, (W - n.width) / 2, 590 - 40, 1.0)
     fr.convert("RGB").save(B.OUT / "cover.jpg", quality=95)
 
 
