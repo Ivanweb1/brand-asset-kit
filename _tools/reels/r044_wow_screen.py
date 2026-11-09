@@ -37,17 +37,17 @@ CTA = ["Напишите «ПРОМПТ» —", "отдам промпт и ск
 FULL = (0, 0, 1, 1)
 SCENES = [
     # 0–3 с: результат — вечер с огнями, на ~2 с переключается в день
-    dict(t=0.0, d=3.0, src="site", f0=int(7.2 * FPS), crop=FULL, w=1300, dx=60, caps=[(HOOK, 0, 9)]),
+    dict(t=0.0, d=3.0, src="site", f0=int(7.2 * FPS), crop=FULL, w=990, dx=0, caps=[(HOOK, 0, 9)]),
     # 3–5,2 с: карточка набора, клик «Скопировать промпт»
-    dict(t=3.0, d=2.2, src="kit", f0=0, crop=(0.40, 0.0, 1.0, 0.72), w=1120, dx=0,
+    dict(t=3.0, d=2.2, src="kit", f0=0, crop=(0.40, 0.0, 1.0, 0.72), w=1000, dx=0,
          caps=[(["Забираете", "промпт и скилл"], 0, 9)]),
     # 5,2–7,8 с: Claude — скилл, промпт, отправка
-    dict(t=5.2, d=2.6, src="claude", f0=0, crop=(0.06, 0.08, 0.94, 0.86), w=1120, dx=0,
+    dict(t=5.2, d=2.6, src="claude", f0=0, crop=(0.06, 0.08, 0.94, 0.86), w=1000, dx=0,
          caps=[(["Вставляете в Claude"], 0, 9)]),
     # 7,8–10,1 с: экран собирается (вход)
-    dict(t=7.8, d=2.3, src="site", f0=0, crop=FULL, w=1300, dx=60, caps=[(["Сайт готов"], 0, 9)]),
+    dict(t=7.8, d=2.3, src="site", f0=0, crop=FULL, w=990, dx=0, caps=[(["Сайт готов"], 0, 9)]),
     # 10,1–13 с: пины и переключение в вечер — конец похож на первый кадр
-    dict(t=10.1, d=2.9, src="site", f0=int(4.8 * FPS), crop=FULL, w=1300, dx=60, caps=[(CTA, 0, 9)]),
+    dict(t=10.1, d=2.9, src="site", f0=int(4.8 * FPS), crop=FULL, w=990, dx=0, caps=[(CTA, 0, 9)]),
 ]
 TOT = SCENES[-1]["t"] + SCENES[-1]["d"]
 T_NOTE = 11.0                                           # уведомление об оплате (правило 06.11)
@@ -70,7 +70,7 @@ def quad(sc, p):
     aspect = ((y1 - y0) * SRC_H) / ((x1 - x0) * SRC_W)
     z = 1 + 0.045 * ss(p)                               # медленный наезд за сцену
     w = sc["w"] * z; h = w * aspect
-    cx = W / 2 + sc["dx"] - 18 * ss(p); cy = 1080 + (1 - z) * 40
+    cx = W / 2 + sc["dx"] - 18 * ss(p); cy = 1010 + (1 - z) * 40
     hl, hr = h * 1.05, h * 0.95                          # левый край ближе
     lx, rx = cx - w / 2, cx + w / 2 - w * 0.015
     return [(lx, cy - hl / 2), (rx, cy - hr / 2), (rx, cy + hr / 2), (lx, cy + hl / 2)]
@@ -178,7 +178,7 @@ def at(i):
             put_caption(fr, lines, a)
     if t >= T_NOTE:
         n = note(); k = eout((t - T_NOTE) / 0.35)
-        y = int(1452 + (1 - k) * 160)
+        y = int(1370 + (1 - k) * 160)
         im = n.copy(); im.putalpha(im.getchannel("A").point(lambda v: int(v * k)))
         fr.paste(im, ((W - n.width) // 2, y), im)
     return fr
