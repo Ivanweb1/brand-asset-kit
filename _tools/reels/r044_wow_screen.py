@@ -32,7 +32,7 @@ def ss(x): x = clamp(x); return x * x * (3 - 2 * x)
 
 # ── монтажный лист: (начало в ролике, длительность, исходник, кадр исходника в начале, кроп, ширина экрана, текст)
 #    кроп — доля исходника (x0, y0, x1, y1); текст — строки, (начало, конец) внутри сцены
-HOOK = ["Claude + мой промпт =", "сайт за 100 000 ₽"]
+HOOK = ["{C} + мой промпт =", "сайт за 100 000 ₽"]
 CTA = ["Напишите «ПРОМПТ» —", "отдам промпт и скилл"]
 FULL = (0, 0, 1, 1)
 SCENES = [
@@ -43,7 +43,7 @@ SCENES = [
          caps=[(["Забираете", "промпт и скилл"], 0, 9)]),
     # 5,2–7,8 с: Claude — скилл, промпт, отправка
     dict(t=5.2, d=2.6, src="claude", f0=0, crop=(0.06, 0.08, 0.94, 0.86), w=1000, dx=0,
-         caps=[(["Вставляете в Claude"], 0, 9)]),
+         caps=[(["Вставляете в {C}"], 0, 9)]),
     # 7,8–10,1 с: экран собирается (вход)
     dict(t=7.8, d=2.3, src="site", f0=0, crop=FULL, w=990, dx=0, caps=[(["Сайт готов"], 0, 9)]),
     # 10,1–13 с: пины и переключение в вечер — конец похож на первый кадр
@@ -128,14 +128,38 @@ def screen(fr, sc, p, i):
 def font(size): return ImageFont.truetype(str(FONT), size)
 
 
+LOGO = "{C}"                                            # в тексте плашки — значок Claude вместо слова
+LOGO_SRC = K / "work" / "r031" / "logo-claude-src.png"  # значок приложения Claude (из R031)
+
+
+@functools.lru_cache(None)
+def logo(px):
+    im = Image.open(LOGO_SRC).convert("RGBA").resize((px, px), Image.LANCZOS)
+    m = Image.new("L", (px, px), 0); ImageDraw.Draw(m).rounded_rectangle([0, 0, px - 1, px - 1], int(px * 0.24), fill=255)
+    im.putalpha(m); return im
+
+
+def parts(s): return [p for p in s.replace(LOGO, "\0" + LOGO + "\0").split("\0") if p]
+
+
+def line_w(s, f, ic): return sum(ic if p == LOGO else f.getlength(p) for p in parts(s))
+
+
 @functools.lru_cache(None)
 def caption(lines):
     size = 74
-    while max(font(size).getlength(s) for s in lines) > 900: size -= 2
-    f = font(size); lh = int(size * 1.18)
+    while max(line_w(s, font(size), int(size * 1.08)) for s in lines) > 900: size -= 2
+    f = font(size); lh = int(size * 1.3); ic = int(size * 1.08)
+    asc = f.getmetrics()[0]
     im = Image.new("RGBA", (W, lh * len(lines) + 60), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
     for k, s in enumerate(lines):
-        d.text((W / 2, 30 + k * lh), s, font=f, fill=(255, 255, 255, 255), anchor="mt")
+        x = (W - line_w(s, f, ic)) / 2; base = 30 + k * lh + asc
+        for p in parts(s):
+            if p == LOGO:                               # по центру высоты прописных
+                cy = base - size * 0.36
+                im.alpha_composite(logo(ic), (int(x), int(cy - ic / 2))); x += ic
+            else:
+                d.text((x, base), p, font=f, fill=(255, 255, 255, 255), anchor="ls"); x += f.getlength(p)
     shadow = Image.new("RGBA", im.size, (0, 0, 0, 0))
     shadow.putalpha(im.getchannel("A").filter(ImageFilter.GaussianBlur(14)).point(lambda v: int(v * 0.55)))
     out = Image.alpha_composite(shadow, im)
