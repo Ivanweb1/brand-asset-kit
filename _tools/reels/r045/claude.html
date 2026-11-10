@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>R045 — Claude</title>
+<style>
+@font-face{font-family:M;src:url(../../../00_BRAND_GUIDE/fonts/Manrope-Medium.ttf);font-weight:500}
+@font-face{font-family:M;src:url(../../../00_BRAND_GUIDE/fonts/Manrope-SemiBold.ttf);font-weight:600}
+@font-face{font-family:M;src:url(../../../00_BRAND_GUIDE/fonts/Manrope-ExtraBold.ttf);font-weight:800}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#faf9f5;font-family:M,sans-serif;color:#29261b;overflow:hidden}
+.top{position:absolute;left:44px;top:34px;font-size:26px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:12px}
+.top i{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle,#d97757 35%,transparent 36%),conic-gradient(from 0deg,#d97757 0 10%,transparent 0 20%,#d97757 0 30%,transparent 0 40%,#d97757 0 50%,transparent 0 60%,#d97757 0 70%,transparent 0 80%,#d97757 0 90%,transparent 0)}
+.hello{position:absolute;left:0;right:0;top:250px;text-align:center;font-size:44px;font-weight:600;color:#3d3929;transition:opacity .4s}
+.box{position:absolute;left:170px;right:170px;top:350px;border-radius:30px;background:#fff;border:1px solid #e3dfd3;box-shadow:0 10px 40px rgba(60,50,30,.08);padding:26px 30px 92px;min-height:230px;transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .4s}
+.ph{font-size:24px;color:#9a968a}
+.chips{display:flex;gap:12px;margin-bottom:18px}
+.chip{display:inline-flex;align-items:center;gap:12px;padding:12px 18px;border-radius:16px;background:#f3f1ea;opacity:0;transform:scale(.8);transition:.3s cubic-bezier(.3,1.5,.5,1)}
+.chip.on{opacity:1;transform:none}
+.chip b{width:38px;height:38px;border-radius:10px;background:#c8862e;display:grid;place-items:center;font-size:13px;color:#fff;font-weight:800}
+.chip span{font-size:19px;font-weight:600}.chip small{display:block;font-size:14px;color:#8a867a;font-weight:500}
+.text{display:none;font-size:22px;line-height:1.5}
+.text.on{display:block}
+.text .l1{color:#29261b;font-weight:600}
+.text .rest{filter:blur(5px);color:#5a5648}
+.send{position:absolute;right:22px;bottom:20px;width:54px;height:54px;border-radius:16px;background:#c96442;display:grid;place-items:center;transition:transform .12s}
+.send.press{transform:scale(.88)}
+.send svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:2.4}
+.plus{position:absolute;left:24px;bottom:22px;width:48px;height:48px;border-radius:14px;border:1px solid #dcd8cc;display:grid;place-items:center;font-size:28px;color:#8a867a}
+.sent .box{transform:translateY(330px);opacity:0}.sent .hello{opacity:0}
+.msg{position:absolute;right:170px;top:150px;max-width:760px;padding:20px 26px;border-radius:24px;background:#f0eee6;font-size:21px;line-height:1.5;opacity:0;transform:translateY(40px);transition:.5s cubic-bezier(.2,.8,.2,1)}
+.msg .rest{filter:blur(5px)}
+.sent .msg{opacity:1;transform:none}
+.work{position:absolute;left:170px;top:400px;font-size:24px;font-weight:600;display:flex;gap:14px;align-items:center;opacity:0;transition:opacity .4s .25s;color:#3d3929}
+.work i{width:22px;height:22px;border-radius:50%;border:3px solid #c96442;border-right-color:transparent;animation:spin .8s linear infinite}
+.sent .work{opacity:1}
+@keyframes spin{to{transform:rotate(360deg)}}
+.cursor{position:absolute;left:0;top:0;width:34px;height:34px;transform:translate(820px,860px);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.cursor.go{transform:translate(1206px,624px)}
+.cursor svg{width:34px;height:34px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.35))}
+</style></head><body>
+<div class="top"><i></i>Claude</div>
+<div class="hello">Чем помочь сегодня?</div>
+<div class="msg"><div class="l1"><b>Живой сайт со скролл-видео.</b> Ниша: парфюм MIRRA</div><div class="rest">Первый экран собирается из видео капли, при скролле флакон взлетает, ноты разлетаются, финал на подиуме…</div></div>
+<div class="work"><i></i>Собираю сайт по скиллу scroll-video-site…</div>
+<div class="box">
+  <div class="chips"><div class="chip" id="chip"><b>MD</b><div><span>SKILL.md</span><small>scroll-video-site</small></div></div></div>
+  <div class="ph" id="ph">Напишите сообщение…</div>
+  <div class="text" id="tx"><div class="l1">Живой сайт со скролл-видео. Ниша: парфюм MIRRA</div><div class="rest">Первый экран: капля падает на камень и закручивается во флакон, вокруг собираются шапка, заголовок и карточки. При скролле флакон взлетает, разлетаются ноты, затем садится на подиум. Видео по кадрам на canvas…</div></div>
+  <div class="plus">+</div>
+  <div class="send" id="send"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
+</div>
+<div class="cursor" id="cur"><svg viewBox="0 0 24 24"><path d="M4 2l15 11-6.5 1.2L16 21l-3 1.3-3.4-6.8L4 19z" fill="#fff" stroke="#111" stroke-width="1.2"/></svg></div>
+<script>
+const $=id=>document.getElementById(id);
+setTimeout(()=>$('chip').classList.add('on'),250);
+setTimeout(()=>{$('ph').style.display='none';$('tx').classList.add('on')},700);
+setTimeout(()=>$('cur').classList.add('go'),1000);
+setTimeout(()=>$('send').classList.add('press'),1600);
+setTimeout(()=>{$('send').classList.remove('press');document.body.classList.add('sent')},1720);
+</script>
+</body></html>
