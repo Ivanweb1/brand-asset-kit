@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>R046 — набор</title>
+<style>
+@font-face{font-family:M;src:url(../../../00_BRAND_GUIDE/fonts/Manrope-Medium.ttf);font-weight:500}
+@font-face{font-family:M;src:url(../../../00_BRAND_GUIDE/fonts/Manrope-SemiBold.ttf);font-weight:600}
+@font-face{font-family:M;src:url(../../../00_BRAND_GUIDE/fonts/Manrope-ExtraBold.ttf);font-weight:800}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#0d100f;font-family:M,sans-serif;color:#f1f3ef;overflow:hidden}
+.wrap{position:absolute;inset:40px;display:grid;grid-template-columns:1fr 470px;gap:22px}
+.preview{border-radius:30px;overflow:hidden;background:#1a1d1c;position:relative}
+.preview img{width:100%;height:100%;object-fit:cover;object-position:left center}
+.panel{border-radius:30px;background:#1b1f1d;padding:48px 40px;display:flex;flex-direction:column}
+h1{font-size:46px;font-weight:800;letter-spacing:-.03em;margin:0}
+.sub{font-size:22px;color:#9aa39c;margin:8px 0 34px;font-weight:500}
+.tags{display:flex;gap:10px;margin-bottom:38px}
+.tags span{font-size:16px;padding:9px 16px;border-radius:20px;background:#262b28;color:#cfd6cf;font-weight:600}
+.copy{height:74px;border-radius:37px;background:#eef1ea;color:#121513;display:flex;align-items:center;justify-content:center;gap:14px;font-size:22px;font-weight:700;transition:transform .12s, background .3s}
+.copy.press{transform:scale(.96)}
+.copy.done{background:#b5562f;color:#fff}
+.copy svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2}
+.row{margin-top:16px;height:66px;border-radius:20px;background:#232825;display:flex;align-items:center;padding:0 22px;gap:14px;font-size:19px;font-weight:600}
+.row b{font-family:ui-monospace,Consolas,monospace;font-size:17px;color:#e09a72;font-weight:600}
+.row span{margin-left:auto;color:#9aa39c;font-size:16px}
+.cursor{position:absolute;left:0;top:0;width:34px;height:34px;transform:translate(1180px,880px);transition:transform .55s cubic-bezier(.2,.8,.2,1)}
+.cursor.go{transform:translate(1150px,322px)}
+.cursor svg{width:34px;height:34px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
+</style></head><body>
+<div class="wrap">
+  <div class="preview"><img src="../../../work/r046/preview.jpg"></div>
+  <div class="panel">
+    <h1>KAFFA</h1>
+    <div class="sub">Живой сайт · скролл-видео</div>
+    <div class="tags"><span>Промпт</span><span>Скилл</span><span>Инструкция</span></div>
+    <div class="copy" id="copy"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg><span id="ct">Скопировать промпт</span></div>
+    <div class="row"><b>SKILL.md</b>Скилл для Claude<span>Скачать</span></div>
+    <div class="row"><b>README.md</b>Инструкция<span>3 шага</span></div>
+  </div>
+</div>
+<div class="cursor" id="cur"><svg viewBox="0 0 24 24"><path d="M4 2l15 11-6.5 1.2L16 21l-3 1.3-3.4-6.8L4 19z" fill="#fff" stroke="#111" stroke-width="1.2"/></svg></div>
+<script>
+const $=id=>document.getElementById(id);
+setTimeout(()=>$('cur').classList.add('go'),350);
+setTimeout(()=>$('copy').classList.add('press'),1000);
+setTimeout(()=>{$('copy').classList.remove('press');$('copy').classList.add('done');$('ct').textContent='✓ Скопировано'},1130);
+</script>
+</body></html>
